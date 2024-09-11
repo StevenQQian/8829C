@@ -5,7 +5,8 @@
 
 #include "v5.h"
 #include "v5_vcs.h"
-
+using namespace vex;
+using namespace std;
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \
