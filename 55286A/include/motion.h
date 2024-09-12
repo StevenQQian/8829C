@@ -35,11 +35,9 @@ void driveStraight(double distance, double speedRatio, double kP = 0, double kI 
         leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
-
         leftCurrentReading = leftSum / 3;
         double deltaLeft = leftCurrentReading - leftPrevReading;
         distaceTraveled += deltaLeft;
-
         // Error calculation
         double error = distance - distaceTraveled;
         double driveOutput = lateralPID(error, kP, kI, kD);
