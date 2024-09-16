@@ -1,36 +1,31 @@
 #ifndef MOTION_H
 #define MOTION_H
-
 #include "drive.h"
-
 void turnToHeading(double heading, double speedRatio = 1, double reversed = 0, double kP = 0, double kI = 0, double kD = 0) {
     resetPID();
     double turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
-    while (fabs(turnError) > 0.3 && imu.gyroRate(zaxis, velocityUnits::dps) / 100 > 0.3) {
+    while (fabs(turnError) > 0.3 || imu.gyroRate(zaxis, velocityUnits::dps) / 100 > 0.3) {
         turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
         double driveOutput = angularPID(turnError, kP, kI, kD);
         if (fabs(driveOutput) > 100 && driveOutput > 0) driveOutput = 100;
         else if (fabs(driveOutput) > 100 && driveOutput < 0) driveOutput = -100;
         driveOutput *= speedRatio;
+        cout << "error" << turnError << "drive output" << driveOutput << endl;
         setDrive(driveOutput, -driveOutput);
         vexDelay(10); 
     }
     setDrive(0, 0);
 }
-
-void driveStraight(double distance, double speedRatio, double kP = 0, double kI = 0, double kD = 0) {
+void driveStraight(double distance, double speedRatio = 1, double kP = 0, double kI = 0, double kD = 0) {
     resetPID();
-    double linearError = distance;
-
+    double error = distance;
     double leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
-
     double leftCurrentReading = leftSum / 3;
     double leftPrevReading = leftCurrentReading;
-
     double distaceTraveled = 0;
-    while (fabs(linearError) < 0.2 && lM.velocity(rpm) * driveWheelDiameter / 6000 < 0.02) {
+    while (fabs(error) > 0.2 || lM.velocity(rpm) * driveWheelDiameter / 6000 > 0.02) {
         // Get drivetrain distance reading
         leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
@@ -39,16 +34,56 @@ void driveStraight(double distance, double speedRatio, double kP = 0, double kI 
         double deltaLeft = leftCurrentReading - leftPrevReading;
         distaceTraveled += deltaLeft;
         // Error calculation
-        double error = distance - distaceTraveled;
+        error = distance - distaceTraveled;
         double driveOutput = lateralPID(error, kP, kI, kD);
         if (fabs(driveOutput) > 100 && driveOutput > 0) driveOutput = 100;
         else if (fabs(driveOutput) > 100 && driveOutput < 0) driveOutput = -100;
+        cout << "error" << error << "drive output" << driveOutput << endl;
         setDrive(driveOutput, driveOutput);
         vexDelay(10);
     }
-    
 }
-
-
-
+void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1, double kP = 0, double kI = 0, double kD = 0) {
+    resetPID();
+    double leftError = leftDistance;
+    double rightError = rightDistance;
+    double leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+    (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+    (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
+    double leftCurrentReading = leftSum / 3;
+    double leftPrevReading = leftCurrentReading;
+    double leftDistaceTraveled = 0;
+    double rightSum = ((rB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+    (rM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+    (rF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
+    double rightCurrentReading = rightSum / 3;
+    double rightPrevReading = rightCurrentReading;
+    double rightDistaceTraveled = 0;
+    while (fabs(leftError) > 0.2 || fabs(rightError) > 0.2 || lM.velocity(rpm) * driveWheelDiameter / 6000 > 0.02 || rM.velocity(rpm) * driveWheelDiameter / 6000 > 0.02) {
+        leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+        (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+        (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
+        leftCurrentReading = leftSum / 3;
+        rightSum = ((rB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+        (rM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
+        (rF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
+        rightCurrentReading = rightSum / 3;
+        double deltaLeft = leftCurrentReading - leftPrevReading;
+        double deltaRight = rightCurrentReading - rightPrevReading;
+        leftDistaceTraveled += deltaLeft;
+        rightDistaceTraveled += deltaRight;
+        leftError = leftDistance - leftDistaceTraveled;
+        rightError = rightDistance - rightDistaceTraveled;
+        double leftOutput = lateralPID(leftError, kP, kI, kD);
+        double rightOutput = lateralPID2(rightError, kP, kI, kD);
+        if (fabs(leftOutput) > 100 && leftOutput > 0) leftOutput = 100;
+        else if (fabs(leftOutput) > 100 && leftOutput < 0) leftOutput = -100;
+        if (fabs(rightOutput) > 100 && rightOutput > 0) rightOutput = 100;
+        else if (fabs(rightOutput) > 100 && rightOutput < 0) rightOutput = -100;
+        setDrive(leftOutput, rightOutput);
+        leftPrevReading = leftCurrentReading;
+        rightPrevReading = rightCurrentReading;
+        vexDelay(10);
+    }
+}
 #endif // !MOTION_H

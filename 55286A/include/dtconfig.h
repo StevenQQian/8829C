@@ -14,10 +14,17 @@ motor rF(-1, gearSetting::ratio6_1, 1);
 
 double dt_rpm = 450;
 double driveWheelDiameter = 3.25;
+double trackingWidth = 0;
+
 
 // Sensors
 rotation horizontalTrackingWheel(-1, 0);
 rotation verticalTrackingWheel(-1, 0);
+double horizontalOffset = 0;
+double verticalOffset = 0;
+double verticalDiameter = 2;
+double horizontalDiameter = 2;
+
 
 inertial imu(-1);
 optical optic(-1);

@@ -11,4 +11,15 @@ void setDrive(double l, double r) {
     rF.spin(fwd, r, velocityUnits::pct);
 }
 
+void splitArcade() {
+    double linearVel = master.Axis3.position(percentUnits::pct);
+    double angularVel = master.Axis1.position(percentUnits::pct);
+    if (fabs(linearVel) + fabs(angularVel) > 12000 && linearVel > 0) {
+        linearVel = 100 - fabs(angularVel);
+    }
+    if (fabs(linearVel) + fabs(angularVel) > 12000 && linearVel < 0) {
+        linearVel = -100 + fabs(angularVel);
+    }
+    setDrive(linearVel + angularVel, linearVel - angularVel);
+}
 #endif // !DRIVE_H
