@@ -30,13 +30,13 @@ int track() {
             localY = deltaY;
         }
         else {
-            localX = 2 * sin(deltaHeading * (M_PI / 180) / 2) * (deltaX / (deltaHeading * (M_PI / 180)) + horizontalOffset);
-            localY = 2 * sin(deltaHeading * (M_PI / 180) / 2) * (deltaY / (deltaHeading * (M_PI / 180)) + verticalOffset);
+            localX = 2 * sin(toRadian(deltaHeading) / 2) * (deltaX / (toRadian(deltaHeading)) + horizontalOffset);
+            localY = 2 * sin(toRadian(deltaHeading) / 2) * (deltaY / (toRadian(deltaHeading)) + verticalOffset);
         }
-        x += localY * sin(avgHeading * (M_PI / 180));
-        y += localY * cos(avgHeading * (M_PI / 180));
-        x += localX * -cos(avgHeading * (M_PI / 180));
-        y += localX * sin(avgHeading * (M_PI / 180));
+        x += localY * sin(toRadian(avgHeading));
+        y += localY * cos(toRadian(avgHeading));
+        x += localX * -cos(toRadian(avgHeading));
+        y += localX * sin(toRadian(avgHeading));
         position = Vector2d(x, y);
         prevHeading = currentHeading;
         prevHorizontal = currentHorizontal;
@@ -51,5 +51,8 @@ void calibrate() {
     verticalTrackingWheel.setPosition(0, rotationUnits::deg);
     imu.calibrate();
     imu.setRotation(0, rotationUnits::deg);
+    x = 0;
+    y = 0;
+    theta = 0;
 }
 #endif // !ODOM_H

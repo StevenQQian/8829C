@@ -86,4 +86,37 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
         vexDelay(10);
     }
 }
+
+/** 
+ * Functions below utilize odometry!!!
+ * 
+ * */
+
+void driveToPoint(double targetX, double targetY, double maxVel, double minVel, double drivekP, double drivekI, double drivekD, double angularkP, double angularkI, double angularkD) {
+    resetPID();
+    Vector2d targetPose = Vector2d(targetX, targetY);
+    double targetDeg = toDeg(atan2((targetPose - position)[0], (targetPose - position)[1]));
+    double angularError = targetDeg - getAbsoluteHeading();
+    double driveError = (targetPose - position).norm();
+    bool lineSettled = is_line_settled(targetX, targetY, targetDeg, x, y);
+    while (!lineSettled) {
+        driveError = (targetPose - position).norm();
+        angularError = toNegPos180(toDeg(atan2((targetPose - position)[0], (targetPose - position)[1])) - getAbsoluteHeading());
+        double driveOutput = lateralPID(driveError, drivekP, drivekI, drivekD);
+        double headingScaleFactor = cos(toRadian(angularError));
+        driveOutput *= headingScaleFactor;
+        angularError = toNegPos90(angularError);
+        double turnOutput = angularPID(angularError, angularkP, angularkI, angularkD);
+
+        driveOutput = clamp(driveOutput, -fabs(headingScaleFactor)*maxVel, fabs(headingScaleFactor)*maxVel);
+        turnOutput = clamp(turnOutput, -maxVel, maxVel);
+
+        driveOutput = clamp_min_voltage(driveOutput, minVel);
+        setDrive(left_velocity_scaling(driveOutput, turnOutput), right_velocity_scaling(driveOutput, turnOutput));
+        vexDelay(10);
+    }
+    setDrive(0, 0);
+}
+
+
 #endif // !MOTION_H
