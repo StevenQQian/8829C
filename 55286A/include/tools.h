@@ -14,8 +14,8 @@ double toDeg(double radian) {
 double toNegPos90(double heading) {
     double input = heading;
     while (input >= 90 || input < -90) {
-        if (input < -90) input += 360;
-        if (input >= 90) input -= 360;
+        if (input < -90) input += 180;
+        if (input >= 90) input -= 180;
     }
     return input;
 }

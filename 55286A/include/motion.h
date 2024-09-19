@@ -42,6 +42,7 @@ void driveStraight(double distance, double speedRatio = 1, double kP = 0, double
         setDrive(driveOutput, driveOutput);
         vexDelay(10);
     }
+    setDrive(0, 0);
 }
 void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1, double kP = 0, double kI = 0, double kD = 0) {
     resetPID();
@@ -85,6 +86,7 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
         rightPrevReading = rightCurrentReading;
         vexDelay(10);
     }
+    setDrive(0, 0);
 }
 
 /** 
@@ -107,16 +109,28 @@ void driveToPoint(double targetX, double targetY, double maxVel, double minVel, 
         driveOutput *= headingScaleFactor;
         angularError = toNegPos90(angularError);
         double turnOutput = angularPID(angularError, angularkP, angularkI, angularkD);
-
         driveOutput = clamp(driveOutput, -fabs(headingScaleFactor)*maxVel, fabs(headingScaleFactor)*maxVel);
         turnOutput = clamp(turnOutput, -maxVel, maxVel);
-
         driveOutput = clamp_min_voltage(driveOutput, minVel);
         setDrive(left_velocity_scaling(driveOutput, turnOutput), right_velocity_scaling(driveOutput, turnOutput));
         vexDelay(10);
     }
     setDrive(0, 0);
 }
-
+void turnToPoint(double targetX, double targetY, double kP, double kI, double kD) {
+    resetPID();
+    Vector2d targetPose = Vector2d(targetX, targetY);
+    double targetDeg = toNegPos180(toDeg(atan2((targetPose - position)[0], (targetPose - position)[1])));
+    double angularError = targetDeg - getAbsoluteHeading();
+    while (fabs(angularError) > 0.3 || imu.gyroRate(zaxis, dps) / 100 > 0.3) {
+        targetDeg = toNegPos180(toDeg(atan2((targetPose - position)[0], (targetPose - position)[1])));
+        angularError = targetDeg - getAbsoluteHeading();
+        double driveOutput = angularPID(angularError, kP, kI, kD);
+        driveOutput = clamp(driveOutput, -100, 100);
+        setDrive(driveOutput, -driveOutput);
+        vexDelay(10);
+    }
+    setDrive(0, 0);
+}
 
 #endif // !MOTION_H
