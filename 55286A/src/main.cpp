@@ -27,7 +27,8 @@ competition Competition;
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-
+  calibrate();
+  task screenTask(screen);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -71,6 +72,11 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
     splitArcade();
+
+    if (master.ButtonUp.PRESSED) {
+      test();
+    }
+    
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }

@@ -1,7 +1,7 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef TOOLS_H
+#define TOOLS_H
 
-#include "odom.h"
+#include "vex.h"
 
 double toRadian(double degree) {
     double output = degree * (M_PI / 180);
@@ -45,7 +45,7 @@ double toAbsoluteDegree(double heading) {
  * @return The scaled voltage for the left side of the robot.
  */
 double left_velocity_scaling(double drive_output, double heading_output){
-    double ratio = std::max(std::fabs(drive_output+heading_output), std::fabs(drive_output-heading_output))/100.0;
+    double ratio = std::max(std::fabs(drive_output+heading_output), std::fabs(drive_output-heading_output))/12000.0;
     if (ratio > 1) {
         return (drive_output+heading_output)/ratio;
     }
@@ -61,7 +61,7 @@ double left_velocity_scaling(double drive_output, double heading_output){
  * @return The scaled voltage for the right side of the robot.
  */
 double right_velocity_scaling(double drive_output, double heading_output){
-    double ratio = std::max(std::fabs(drive_output+heading_output), std::fabs(drive_output-heading_output))/100.0;
+    double ratio = std::max(std::fabs(drive_output+heading_output), std::fabs(drive_output-heading_output))/12000.0;
     if (ratio > 1) {
         return (drive_output-heading_output)/ratio;
     }
@@ -101,5 +101,12 @@ double clamp_min_voltage(double drive_output, double drive_min_voltage){
         return drive_min_voltage;
     }
   return drive_output;
+}
+
+double deadband(double input, double db) {
+    if (fabs(input) < db) {
+        return 0;
+    }
+    return input;
 }
 #endif // !UTIL_H

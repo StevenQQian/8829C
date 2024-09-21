@@ -4,29 +4,29 @@
 
 
 // Default Six Motor Drive
-motor lB(-1, gearSetting::ratio6_1, 0);
-motor lM(-1, gearSetting::ratio6_1, 1);
-motor lF(-1, gearSetting::ratio6_1, 0);
+motor lB(PORT17, ratio6_1, 1);
+motor lM(PORT20, ratio6_1, 1);
+motor lF(PORT19, ratio6_1, 1);
 
-motor rB(-1, gearSetting::ratio6_1, 1);
-motor rM(-1, gearSetting::ratio6_1, 0);
-motor rF(-1, gearSetting::ratio6_1, 1);
+motor rB(PORT3, ratio6_1, 0);
+motor rM(PORT12, ratio6_1, 0);
+motor rF(PORT11, ratio6_1, 0);
 
 double dt_rpm = 450;
-double driveWheelDiameter = 3.25;
-double trackingWidth = 0;
+double driveWheelDiameter = 2.75;
+double trackingWidth = 14.5;
 
 
 // Sensors
-rotation horizontalTrackingWheel(-1, 0);
-rotation verticalTrackingWheel(-1, 0);
-double horizontalOffset = 0;
-double verticalOffset = 0;
+rotation horizontalTrackingWheel(PORT2, 1);
+rotation verticalTrackingWheel(PORT18, 1);
+double horizontalOffset = 2;
+double verticalOffset = 0.75;
 double verticalDiameter = 2;
 double horizontalDiameter = 2;
 
 
-inertial imu(-1);
+inertial imu(PORT10);
 optical optic(-1);
 
 // Intake
