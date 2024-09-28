@@ -81,7 +81,7 @@ double right_velocity_scaling(double drive_output, double heading_output){
  * @return Whether the robot can be considered settled.
  */
 bool is_line_settled(float targetX, float targetY, float desired_angle_deg, float currentX, float currentY){
-    return( (targetY-currentY) * cos(toRadian(desired_angle_deg)) <= -(targetX-currentX) * sin(toRadian(desired_angle_deg)) );
+    return( (targetY-currentY) * cos(toRadian(desired_angle_deg)) <= -(targetX-currentX) * sin(toRadian(desired_angle_deg)));
 }
 
 double getAbsoluteHeading() {

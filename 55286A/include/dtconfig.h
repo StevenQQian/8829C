@@ -21,8 +21,8 @@ double trackingWidth = 14.5;
 rotation horizontalTrackingWheel(PORT2, 1);
 rotation verticalTrackingWheel(PORT18, 1);
 double horizontalOffset = 2;
-double verticalOffset = 0.75;
-double verticalDiameter = 2;
+double verticalOffset = 0;
+double verticalDiameter = 2.75;
 double horizontalDiameter = 2;
 
 

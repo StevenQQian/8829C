@@ -28,7 +28,7 @@ competition Competition;
 
 void pre_auton(void) {
   calibrate();
-  task screenTask(screen);
+  // task screenTask(screen);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }

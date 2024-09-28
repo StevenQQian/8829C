@@ -91,7 +91,6 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
         setDrive(leftOutput, rightOutput);
         leftPrevReading = leftCurrentReading;
         rightPrevReading = rightCurrentReading;
-
         cout << "leftError: " << leftError << " rightError: " << rightError << " leftOutput: " << leftOutput << " rightOutput: " << rightOutput << endl;
         vexDelay(10);
     }

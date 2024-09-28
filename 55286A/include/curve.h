@@ -2,6 +2,8 @@
 #define CURVE_H
 
 #include "autons.h"
+
+digital_out mogo(Brain.ThreeWirePort.H);
 class Curve{
     public:
         Vector2d startPose;

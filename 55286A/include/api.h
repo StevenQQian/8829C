@@ -11,6 +11,7 @@
 #include "motion.h"
 #include "tools.h"
 #include "curve.h"
+#include "pursuit.h"
 
 
 #endif // !API_H
