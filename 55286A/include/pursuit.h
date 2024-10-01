@@ -46,23 +46,15 @@ void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead 
 
         double angularError = toNegPos180(toDeg(atan2(carrotPoint[0] - x, carrotPoint[1] - y)) - getAbsoluteHeading());
         double curvScaleFactor = cos(toRadian(angularError));
-        double linearVoltage = 11000 * curvScaleFactor;
-        double feedAngularForward = 50000;
-        
+        double linearVoltage = 22000 * curvScaleFactor;
+        double feedAngularForward = 100000;
         double angularVoltage = feedAngularForward * curvature;
-        // if (reversed) {
-        //     setDrive(-right_velocity_scaling(linearVoltage, angularVoltage), -left_velocity_scaling(linearVoltage, angularVoltage));
-        // }
-        // else {
-        //     setDrive(clamp_min_voltage(left_velocity_scaling(linearVoltage, angularVoltage), 0), clamp_min_voltage(right_velocity_scaling(linearVoltage, angularVoltage), 0));
-        // }
         setDrive(speedRatio * clamp_min_voltage(left_velocity_scaling(linearVoltage, angularVoltage), 0), speedRatio * clamp_min_voltage(right_velocity_scaling(linearVoltage, angularVoltage), 0));
         cout << "targetX: " << carrotPoint[0] << " targetY: " << carrotPoint[1] << " currentX: " << x << " currentY: " << y << " curvature: " << curvature << " linear: " << linearVoltage << " angular: " << angularVoltage << " angError: " << angularError << " scaleFactor: " << curvScaleFactor << " heading: " << currentHeading << endl;
         cout << " " << endl;
         time++;
-        vexDelay(10);   
+        vexDelay(10);
     }
     setDrive(0, 0);
-    
 }
 #endif // !PURSUIT_H

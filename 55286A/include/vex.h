@@ -14,6 +14,8 @@ using namespace vex;
 using namespace std;
 using namespace Eigen;
 
+#define RED   vex::color::red;
+#define BLUE  vex::color::blue;
 #define waitUntil(condition)                                                   \
   do {                                                                         \
     wait(5, msec);                                                             \

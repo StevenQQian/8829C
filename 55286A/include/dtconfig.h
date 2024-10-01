@@ -27,11 +27,13 @@ double horizontalDiameter = 2;
 
 
 inertial imu(PORT10);
-optical optic(-1);
+optical optic_1(-1);
+optical optic_2(-1);
+
 
 // Intake
-motor intake(-1, gearSetting::ratio18_1, 0);
-motor conveyor(-1, gearSetting::ratio18_1, 1);
+motor intake(PORT14, gearSetting::ratio18_1, 1);
+motor conveyor(PORT13, gearSetting::ratio6_1, 1);
 
 // Arm
 motor arm(-1, gearSetting::ratio18_1);

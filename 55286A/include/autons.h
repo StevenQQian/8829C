@@ -5,6 +5,7 @@
 #include "motion.h"
 #include "curve.h"
 #include "pursuit.h"
+#include "intake.h"
 
 void test() {
     // driveStraight(24, 1);
