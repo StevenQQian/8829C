@@ -111,6 +111,9 @@
     "type_traits": "cpp",
     "utility": "cpp",
     "typeinfo": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "dense": "cpp",
+    "eigenvalues": "cpp",
+    "cholesky": "cpp"
   }
 }

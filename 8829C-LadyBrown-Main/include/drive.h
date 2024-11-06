@@ -1,6 +1,7 @@
 #ifndef DRIVE_H
 #define DRIVE_H
 #include "pid.h"
+#include "tools.h"
 
 void setDrive(double l, double r) {
     lB.spin(fwd, l, voltageUnits::mV);

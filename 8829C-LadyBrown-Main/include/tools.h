@@ -3,12 +3,20 @@
 
 #include "vex.h"
 
+/**
+ * @brief Convert a degree measure to radians. 
+ * @param degree Input degree in order to be converted to radians. 
+ */
 double toRadian(double degree) {
-    double output = degree * (M_PI / 180);
+    double output = degree * (M_PI / 180.0);
     return output;
 }
+/**
+ * @brief Convert a radian measure to radians. 
+ * @param radian Input radian in order to be converted to degrees. 
+ */
 double toDeg(double radian) {
-    double output = radian / (M_PI / 180);
+    double output = radian / (M_PI / 180.0);
     return output;
 }
 double toNegPos90(double heading) {

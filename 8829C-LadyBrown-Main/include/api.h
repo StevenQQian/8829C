@@ -12,6 +12,7 @@
 #include "tools.h"
 #include "curve.h"
 #include "pursuit.h"
+#include "ladybrown.h"
 
 
 #endif // !API_H

@@ -3,6 +3,7 @@
 
 
 #include "tools.h"
+#include "ladybrown.h"
 
 
 double x = 0;
@@ -13,7 +14,8 @@ Vector2d bot_position = Vector2d(0, 0);
 int track() {
     double currentVertial = verticalTrackingWheel.position(rotationUnits::deg) / 360 * verticalDiameter * M_PI;
     double currentHorizontal = horizontalTrackingWheel.position(rotationUnits::deg) / 360 * horizontalDiameter * M_PI;
-    
+    double leftReading = (lM.position(rotationUnits::deg) + lF.position(rotationUnits::deg) + lB.position(rotationUnits::deg)) / 5;
+    double prevLeftReading = (lM.position(rotationUnits::deg) + lF.position(rotationUnits::deg) + lB.position(rotationUnits::deg)) / 5;
     double prevVertical = currentVertial;
     double prevHorizontal = currentHorizontal;
     double currentHeading = imu.rotation(rotationUnits::deg);
@@ -22,6 +24,7 @@ int track() {
         currentHeading = imu.rotation(rotationUnits::deg);
         double deltaHeading = currentHeading - prevHeading;
         double avgHeading = (currentHeading + prevHeading) / 2;
+        leftReading = (lM.position(rotationUnits::deg) + lF.position(rotationUnits::deg) + lB.position(rotationUnits::deg)) / 5;
         double currentVertial = verticalTrackingWheel.position(rotationUnits::deg) / 360 * verticalDiameter * M_PI;
         double currentHorizontal = horizontalTrackingWheel.position(rotationUnits::deg) / 360 * horizontalDiameter * M_PI;
         double deltaY = currentVertial - prevVertical;
@@ -33,9 +36,11 @@ int track() {
             localY = deltaY;
         }
         else {
-            localX = 2 * sin(toRadian(deltaHeading) / 2) * (deltaX / (toRadian(deltaHeading)) + horizontalOffset);
-            localY = 2 * sin(toRadian(deltaHeading) / 2) * (deltaY / (toRadian(deltaHeading)) + verticalOffset);
+            localX = 2 * sin(toRadian(deltaHeading) / 2) * ((deltaX / (toRadian(deltaHeading))) + horizontalOffset);
+            localY = 2 * sin(toRadian(deltaHeading) / 2) * ((deltaY / (toRadian(deltaHeading))) + verticalOffset);
         }
+
+ 
         double localPolarAngle;
         double localPolarLength;
 
@@ -54,11 +59,12 @@ int track() {
         y += localPolarLength * sin(globalPolarAngle);
         
         bot_position = Vector2d(x, y);
+        prevLeftReading = leftReading;
         prevHeading = currentHeading;
         prevHorizontal = currentHorizontal;
         prevVertical = currentVertial;
         theta = currentHeading;
-        vexDelay(2);
+        vexDelay(5);
     }
     return 0;
 }

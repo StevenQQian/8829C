@@ -27,8 +27,21 @@ competition Competition;
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
+
   calibrate();
-  // task screenTask(screen);
+  ladyBrownStat = 0;
+  task screenTask(screen);
+  task antiJ(antiJam);
+  task store(ringStoring);
+  // task sortingTask(wheelchairTask);
+  task ladyB(ladyBrownTask);
+  optic_1.setLight(ledState::on);
+  optic_2.setLight(ledState::on);
+  optic_1.setLightPower(100);
+  optic_2.setLightPower(100);
+  targetLadybrownDeg = 0;
+  ladyBrownL.setBrake(hold);
+  ladyBrownR.setBrake(hold);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -61,6 +74,7 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+  task lad(setLadybrown);
   // User control code here, inside the loop
   while (1) {
     // This is the main execution loop for the user control program.
@@ -73,9 +87,10 @@ void usercontrol(void) {
     // ........................................................................
     splitArcade();
     setIntakeMotors();
-    conveyor.spin(fwd, 12000 * (master.ButtonR1.pressing() - master.ButtonR2.pressing()), voltageUnits::mV);
+    // setLadybrown();
     if (master.ButtonUp.PRESSED) {
-      test();
+      // test();
+      blueRingSide();
     }
     
     wait(10, msec); // Sleep the task for a short amount of time to

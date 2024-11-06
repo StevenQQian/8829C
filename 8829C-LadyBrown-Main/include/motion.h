@@ -4,7 +4,16 @@
 #include "drive.h"
 #include "odom.h"
 #include "tools.h"
-void turnToHeading(double heading, double speedRatio = 1, double reversed = 0, double kP = 360, double kI = 22, double kD = 3000) {
+/**
+ * @brief Turn towards an abosolute heading in degrees on a cartesian plane. 
+ * @param heading The desired heading for the robot to turn to. 
+ * @param speedRatio Voltage scaling for the output. Ranged 0-1, default 1. 
+ * @param reversed Decides if the back of the robot points towards the heading or the front of the robot points towards the heading. Default front. 
+ * @param kP A constant kP value fed into the turn PID loop. May be tuned. 
+ * @param kI A constant kI value fed into the turn PID loop. May be tuned. 
+ * @param kD A constant kD value fed into the turn PID loop. May be tuned. 
+ */
+void turnToHeading(double heading, double speedRatio = 1, double speedCap = 1, double reversed = 0, double kP = 360, double kI = 25, double kD = 2800) {
     resetPID();
     double time = 0;
     double turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
@@ -14,6 +23,7 @@ void turnToHeading(double heading, double speedRatio = 1, double reversed = 0, d
         if (fabs(driveOutput) > 12000 && driveOutput > 0) driveOutput = 12000;
         else if (fabs(driveOutput) > 12000 && driveOutput < 0) driveOutput = -12000;
         driveOutput *= speedRatio;
+        clamp(driveOutput, -12000 * speedCap, 12000 * speedCap);
         cout << "error: " << turnError << " drive output: " << driveOutput << " derivative: " << imu.gyroRate(zaxis, velocityUnits::dps) / 100 << endl;
         setDrive(driveOutput, -driveOutput);
         time += 10;
@@ -22,7 +32,15 @@ void turnToHeading(double heading, double speedRatio = 1, double reversed = 0, d
     cout << "settled: " << time << endl;
     setDrive(0, 0);
 }
-void driveStraight(double distance, double speedRatio = 1, double kP = 3200, double kI = 230, double kD = 67000) {
+/**
+ * @brief Drive straight for a certain distance
+ * @param distance The desired distance for the robot to move for in inches. 
+ * @param speedRatio Voltage scaling for the output. Ranged 0-1, default 1.  
+ * @param kP A constant kP value fed into the lateral PID loop. May be tuned. 
+ * @param kI A constant kI value fed into the lateral PID loop. May be tuned. 
+ * @param kD A constant kD value fed into the lateral PID loop. May be tuned. 
+ */
+void driveStraight(double distance, double speedRatio = 1, double speedCap = 1, double kP = 2000, double kI = 230, double kD = 57000) {
     resetPID();
     double error = distance;
     double leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
@@ -45,12 +63,21 @@ void driveStraight(double distance, double speedRatio = 1, double kP = 3200, dou
         if (fabs(driveOutput) > 12000 && driveOutput > 0) driveOutput = 12000;
         else if (fabs(driveOutput) > 12000 && driveOutput < 0) driveOutput = -12000;
         cout << "error: " << error << " drive output: " << driveOutput << endl;
-        setDrive(driveOutput, driveOutput);
+        setDrive(speedCap * driveOutput, speedCap * driveOutput);
         leftPrevReading = leftCurrentReading;
         vexDelay(10);
     }
     setDrive(0, 0);
 }
+/**
+ * @brief Give separate distance for every side of the drivetrain for curving purposes. 
+ * @param leftDistance The distance commanded for the left side of the drivetrain. 
+ * @param rightDistance The distance commanded for the right side of the drivetrain. 
+ * @param speedRatio Voltage scaling for the output. Ranged 0-1, default 1. 
+ * @param kP A constant kP value fed into the lateral PID loop. May be tuned. 
+ * @param kI A constant kI value fed into the lateral PID loop. May be tuned. 
+ * @param kD A constant kD value fed into the lateral PID loop. May be tuned. 
+ */
 void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1, double kP = 3200, double kI = 230, double kD = 65000) {
     resetPID();
     double leftError = leftDistance;
@@ -99,7 +126,6 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
 
 /** 
  * Functions below utilize odometry!!!
- * 
  * */
 void driveToPoint(double targetX, double targetY, double maxVel = 12000, double minVel = 0, double drivekP = 3000, double drivekI = 230, double drivekD = 100000, double angularkP = 360, double angularkI = 22, double angularkD = 3000) {
     resetPID();
