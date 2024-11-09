@@ -62,7 +62,7 @@ void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead 
         double curvScaleFactor = cos(toRadian(angularError));
         // Velocity modifiers
         double linearVoltage = 22000 * curvScaleFactor;
-        double feedAngularForward = 100000;
+        double feedAngularForward = 110000;
         double angularVoltage = feedAngularForward * curvature;
         setDrive(speedRatio * clamp_min_voltage(left_velocity_scaling(linearVoltage, angularVoltage), 0), speedRatio * clamp_min_voltage(right_velocity_scaling(linearVoltage, angularVoltage), 0));
         cout << "targetX: " << carrotPoint[0] << " targetY: " << carrotPoint[1] << " currentX: " << x << " currentY: " << y << " curvature: " << curvature << " linear: " << linearVoltage << " angular: " << angularVoltage << " angError: " << angularError << " scaleFactor: " << curvScaleFactor << " heading: " << currentHeading << endl;

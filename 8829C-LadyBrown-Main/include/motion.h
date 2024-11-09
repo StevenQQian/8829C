@@ -78,7 +78,7 @@ void driveStraight(double distance, double speedRatio = 1, double speedCap = 1, 
  * @param kI A constant kI value fed into the lateral PID loop. May be tuned. 
  * @param kD A constant kD value fed into the lateral PID loop. May be tuned. 
  */
-void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1, double kP = 3200, double kI = 230, double kD = 65000) {
+void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1, double kP = 2000, double kI = 230, double kD = 57000) {
     resetPID();
     double leftError = leftDistance;
     double rightError = rightDistance;
@@ -127,7 +127,7 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
 /** 
  * Functions below utilize odometry!!!
  * */
-void driveToPoint(double targetX, double targetY, double maxVel = 12000, double minVel = 0, double drivekP = 3000, double drivekI = 230, double drivekD = 100000, double angularkP = 360, double angularkI = 22, double angularkD = 3000) {
+void driveToPoint(double targetX, double targetY, double maxVel = 12000, double minVel = 0, double drivekP = 2300, double drivekI = 230, double drivekD = 90000, double angularkP = 360, double angularkI = 22, double angularkD = 3000) {
     resetPID();
     Vector2d targetPose = Vector2d(targetX, targetY);
     double targetDeg = toDeg(atan2(targetX - x, targetY - y));

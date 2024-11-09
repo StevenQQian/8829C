@@ -33,7 +33,7 @@ void pre_auton(void) {
   task screenTask(screen);
   task antiJ(antiJam);
   task store(ringStoring);
-  // task sortingTask(wheelchairTask);
+  task sortingTask(wheelchairTask);
   task ladyB(ladyBrownTask);
   optic_1.setLight(ledState::on);
   optic_2.setLight(ledState::on);
@@ -90,7 +90,8 @@ void usercontrol(void) {
     // setLadybrown();
     if (master.ButtonUp.PRESSED) {
       // test();
-      blueRingSide();
+      // blueRingSide();
+      redSideRush();
     }
     
     wait(10, msec); // Sleep the task for a short amount of time to

@@ -5,6 +5,8 @@
 
 motor ladyBrownL(PORT17, gearSetting::ratio18_1, true);
 motor ladyBrownR(PORT10, gearSetting::ratio18_1);
+
+motor_group ladyBrown(ladyBrownL, ladyBrownR);
 rotation ladyBrownRotation(PORT20, true);
 int ladyBrownStat = 0;
 bool armPIDActivation = true;
@@ -19,12 +21,11 @@ int ladyBrownTask() {
         error = toNegPos180(error);
         double armVel = -ladyBrownL.velocity(velocityUnits::dps) / 100;
         if (fabs(error) > 0.75) {
-            ladyBrownL.spin(fwd, error * armkP + armVel * armkD, voltageUnits::mV);
-            ladyBrownR.spin(fwd, error * armkP + armVel * armkD, voltageUnits::mV);
+            double power = error * armkP + armVel * armkD;
+            ladyBrown.spin(fwd, power, voltageUnits::mV);
         }
         else {
-            ladyBrownL.spin(fwd, 0, voltageUnits::mV);
-            ladyBrownR.spin(fwd, 0, voltageUnits::mV);
+            ladyBrown.spin(fwd, 0, voltageUnits::mV);
         }
         vexDelay(10);
     }

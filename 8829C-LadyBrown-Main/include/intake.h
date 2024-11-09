@@ -13,13 +13,13 @@ bool redStoring = false;
 bool blueStoring = false;
 
 const double hook_1_detection = 0;
-const double hook_1_sortPose = 660;
+const double hook_1_sortPose = 640;
 const double hook_2_detection = 750;
 const double hook_2_sortPose = 1425;
 const double hook_3_detection = 1600;
 const double hook_3_sortPose = 2325;
 
-const double full_rotation = 2447;
+const double full_rotation = 2457;
 
 double ringQueue[] = {0, 0, 0};
 digital_out mogo(Brain.ThreeWirePort.E);
@@ -31,24 +31,24 @@ int setLadybrown() {
     while (1) {
         if (master.ButtonL1.PRESSED) {
             if (ladyBrownStat == 0) {
-                armkP = 700;
-                armkD = 1000;
-                targetLadybrownDeg = 24;
+                armkP = 200;
+                armkD = 700;
+                targetLadybrownDeg = 24.5;
                 ladyBrownStat = 1;
             }
             else if (ladyBrownStat == 1) {
                 lock = true;
                 conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
-                armkP = 500;
-                armkD = 900;
+                armkP = 150;
+                armkD = 500;
                 targetLadybrownDeg = 132;
                 ladyBrownStat = 2;
                 vexDelay(100);
                 lock = false;
             }
             else if (ladyBrownStat == 2) {
-                armkP = 500;
-                armkD = 500;
+                armkP = 200;
+                armkD = 700;
                 targetLadybrownDeg = 0;
                 ladyBrownStat = 0;
             }
@@ -79,18 +79,18 @@ int wheelchairTask() {
         Brain.Screen.printAt(10, 85, "intakeDeg: %f", conveyor.position(rotationUnits::deg));
         if (sorting) {
             // Detect the color when every hook passes the optical sensor
-            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_detection) < 100 && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 ringQueue[0] = 1;
             }
-            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_2_detection) < 100 && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_2_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 ringQueue[1] = 1;    
             }
-            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_3_detection) < 100 && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_3_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 ringQueue[2] = 1;
             }
 
             // When every hook gets to the top of the conveyor, sort the ring by back spinning if there is a ring to be sorted
-            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_sortPose) < 10 && ringQueue[0] == 1) {
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_sortPose) < 50 && ringQueue[0] == 1) {
                 lock = true;
                 conveyor.spin(fwd, 12000, voltageUnits::mV);
                 vexDelay(100);
@@ -104,7 +104,7 @@ int wheelchairTask() {
                 }
                 
             }
-            else if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_2_sortPose) < 10 && ringQueue[1] == 1) {
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_2_sortPose) < 50 && ringQueue[1] == 1) {
                 lock = true;
                 conveyor.spin(fwd, 12000, voltageUnits::mV);
                 vexDelay(100);
@@ -117,7 +117,7 @@ int wheelchairTask() {
                     conveyor.spin(fwd, 12000, voltageUnits::mV);
                 }
             }
-            else if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_3_sortPose) < 10 && ringQueue[2] == 1) {
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_3_sortPose) < 50 && ringQueue[2] == 1) {
                 lock = true;
                 conveyor.spin(fwd, 12000, voltageUnits::mV);
                 vexDelay(100);
@@ -131,14 +131,14 @@ int wheelchairTask() {
                 }
             }
         }
-    vexDelay(2);
+    vexDelay(10);
     }
     return 0;
 }
 
 int antiJam() {
     while (1) {
-        if (spinning || master.ButtonR1.pressing()) {
+        if (spinning || master.ButtonR1.pressing() && ladyBrownStat != 1) {
             if (conveyor.efficiency() < 0.5) {
                 vexDelay(100);
                 if (conveyor.efficiency() < 0.5) {
