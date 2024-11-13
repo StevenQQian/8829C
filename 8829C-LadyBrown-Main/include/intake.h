@@ -31,7 +31,7 @@ int setLadybrown() {
     while (1) {
         if (master.ButtonL1.PRESSED) {
             if (ladyBrownStat == 0) {
-                armkP = 200;
+                armkP = 500;
                 armkD = 700;
                 targetLadybrownDeg = 24.5;
                 ladyBrownStat = 1;
@@ -39,7 +39,7 @@ int setLadybrown() {
             else if (ladyBrownStat == 1) {
                 lock = true;
                 conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
-                armkP = 150;
+                armkP = 500;
                 armkD = 500;
                 targetLadybrownDeg = 132;
                 ladyBrownStat = 2;
@@ -47,7 +47,7 @@ int setLadybrown() {
                 lock = false;
             }
             else if (ladyBrownStat == 2) {
-                armkP = 200;
+                armkP = 500;
                 armkD = 700;
                 targetLadybrownDeg = 0;
                 ladyBrownStat = 0;
@@ -76,17 +76,20 @@ void setIntakeMotors() {
 
 int wheelchairTask() {
     while (1) {
-        Brain.Screen.printAt(10, 85, "intakeDeg: %f", conveyor.position(rotationUnits::deg));
+        // Brain.Screen.printAt(10, 85, "intakeDeg: %f", conveyor.position(rotationUnits::deg));
         if (sorting) {
-            // Detect the color when every hook passes the optical sensor
+            // Detect the color when every hook passes the optical sensor and reset the arm if wrong color detected
             if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 ringQueue[0] = 1;
+                targetLadybrownDeg = 0;
             }
             if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_2_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
-                ringQueue[1] = 1;    
+                ringQueue[1] = 1;
+                targetLadybrownDeg = 0;    
             }
             if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_3_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 ringQueue[2] = 1;
+                targetLadybrownDeg = 0;
             }
 
             // When every hook gets to the top of the conveyor, sort the ring by back spinning if there is a ring to be sorted
@@ -159,12 +162,12 @@ int antiJam() {
 int ringStoring() {
     while (1) {
         if (redStoring) {
-            if (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red) {
+            if ((optic_1.isNearObject() || optic_2.isNearObject()) && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
                 conveyor.spin(fwd, 0, voltageUnits::mV);
             }
         }
         else if (blueStoring) {
-            if (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue) {
+            if ((optic_1.isNearObject() || optic_2.isNearObject()) && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 conveyor.spin(fwd, 0, voltageUnits::mV);
             }
         }

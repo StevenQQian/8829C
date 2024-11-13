@@ -91,7 +91,9 @@ void usercontrol(void) {
     if (master.ButtonUp.PRESSED) {
       // test();
       // blueRingSide();
-      redSideRush();
+      // redSideRush();
+      // driveStraight(1.2);
+      skills();
     }
     
     wait(10, msec); // Sleep the task for a short amount of time to

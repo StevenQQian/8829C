@@ -3,11 +3,11 @@
 #include "motion.h"
 
 
-motor ladyBrownL(PORT17, gearSetting::ratio18_1, true);
+motor ladyBrownL(PORT18, gearSetting::ratio18_1, true);
 motor ladyBrownR(PORT10, gearSetting::ratio18_1);
 
 motor_group ladyBrown(ladyBrownL, ladyBrownR);
-rotation ladyBrownRotation(PORT20, true);
+rotation ladyBrownRotation(PORT19, true);
 int ladyBrownStat = 0;
 bool armPIDActivation = true;
 double targetLadybrownDeg = 0;
