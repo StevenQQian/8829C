@@ -22,6 +22,9 @@ const double hook_3_sortPose = 2325;
 const double full_rotation = 2457;
 
 double ringQueue[] = {0, 0, 0};
+
+bool blueSorting = false;
+bool redSorting = false;
 digital_out mogo(Brain.ThreeWirePort.E);
 digital_out doinker(Brain.ThreeWirePort.H);
 
@@ -77,7 +80,7 @@ void setIntakeMotors() {
 int wheelchairTask() {
     while (1) {
         // Brain.Screen.printAt(10, 85, "intakeDeg: %f", conveyor.position(rotationUnits::deg));
-        if (sorting) {
+        if (blueSorting) {
             // Detect the color when every hook passes the optical sensor and reset the arm if wrong color detected
             if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_detection) < 200 && (optic_1.color() == vex::color::blue || optic_2.color() == vex::color::blue)) {
                 ringQueue[0] = 1;
@@ -91,6 +94,22 @@ int wheelchairTask() {
                 ringQueue[2] = 1;
                 targetLadybrownDeg = 0;
             }
+        }
+        if (redSorting) {
+            // Detect the color when every hook passes the optical sensor and reset the arm if wrong color detected
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_detection) < 200 && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
+                ringQueue[0] = 1;
+                targetLadybrownDeg = 0;
+            }
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_2_detection) < 200 && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
+                ringQueue[1] = 1;
+                targetLadybrownDeg = 0;    
+            }
+            if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_3_detection) < 200 && (optic_1.color() == vex::color::red || optic_2.color() == vex::color::red)) {
+                ringQueue[2] = 1;
+                targetLadybrownDeg = 0;
+            }
+        }
 
             // When every hook gets to the top of the conveyor, sort the ring by back spinning if there is a ring to be sorted
             if (fabs(fmod(conveyor.position(rotationUnits::deg), full_rotation) - hook_1_sortPose) < 50 && ringQueue[0] == 1) {
@@ -133,7 +152,7 @@ int wheelchairTask() {
                     conveyor.spin(fwd, 12000, voltageUnits::mV);
                 }
             }
-        }
+        
     vexDelay(10);
     }
     return 0;

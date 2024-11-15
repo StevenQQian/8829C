@@ -61,6 +61,9 @@ void blueRingSide() {
     driveStraight(1.2);
     conveyor.spin(fwd, 12000, voltageUnits::mV);
     vexDelay(700);
+    setDrive(12000, 12000);
+    vexDelay(100);
+    setDrive(0, 0);
 }
 
 void redRingSide() {
@@ -108,6 +111,9 @@ void redRingSide() {
     driveStraight(1.2);
     conveyor.spin(fwd, 12000, voltageUnits::mV);
     vexDelay(700);
+    setDrive(12000, 12000);
+    vexDelay(100);
+    setDrive(0, 0);
 }
 int mogoRushFight1() {
     vexDelay(700);
@@ -182,11 +188,14 @@ void redSideRush() {
     driveStraight(1.2);
     blueStoring = false;
     conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(1000000);
+    vexDelay(700);
+    setDrive(12000, 12000);
+    vexDelay(100);
+    setDrive(0, 0);
 }
 
 void blueSideRush() {
-    imu.setRotation(-99, rotationUnits::deg);
+    imu.setRotation(99, rotationUnits::deg);
     x = 60;
     y = -60;
     lB.setBrake(hold);
@@ -228,7 +237,10 @@ void blueSideRush() {
     driveStraight(1.2);
     blueStoring = false;
     conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(1000000);
+    vexDelay(700);
+    setDrive(12000, 12000);
+    vexDelay(100);
+    setDrive(0, 0);
 }
 
 void skills() {
@@ -240,7 +252,7 @@ void skills() {
     rM.setBrake(hold);
     rF.setBrake(hold);
     imu.setRotation(-90, rotationUnits::deg);
-    ringSorting = false;
+    blueSorting = false;
     x = -64.6;
     y = -24;
     driveStraight(-10, 1, 0.8);
@@ -328,7 +340,7 @@ void skills() {
     driveStraight(1);
     conveyor.spin(fwd, 12000, voltageUnits::mV);
     vexDelay(600);
-    ringSorting = true;
+    blueSorting = true;
     conveyor.spin(fwd, 0, voltageUnits::mV);
     driveStraight(4);
     turnToHeading(-175, 1, 1, 0, 360, 33, 2600);
