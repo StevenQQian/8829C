@@ -19,9 +19,9 @@ double trackingWidth = 14.5;
 
 // Sensors
 rotation horizontalTrackingWheel(PORT17, 1);
-rotation verticalTrackingWheel(PORT9, 1);
+rotation verticalTrackingWheel(PORT9, 0);
 double horizontalOffset = 1;
-double verticalOffset = 0.75;
+double verticalOffset = 0.25;
 double verticalDiameter = 2.75;
 double horizontalDiameter = 2;
 

@@ -29,7 +29,7 @@ double curvatureToAPoint(Vector2d currentPose, double currenHeading, Vector2d ta
  *                  Decrease for better follow on the path, increase for smoother path. Default 12. 
  * @param reversed Decides if the front is forward direction or the back is the forward direction. 
  */
-void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead = 12, double reversed = 0) {
+void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead = 12, double reversed = 0, double kD = 0) {
     Vector2d currentPose = Vector2d(x, y);
     double currentHeading = theta;
     double curvature;
@@ -40,6 +40,7 @@ void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead 
     while ((time * 10 < timeOut && !lineSettled) || path.findCarrotPoint(path, lookAhead) != 1) {
         // Check if the robot went through the target line or not
         currentPose = Vector2d(x, y);
+        double derivative = -verticalTrackingWheel.velocity(velocityUnits::dps) / 100;
         // Check if the robot is settled
         lineSettled = is_line_settled(path.targetPose[0], path.targetPose[1], targetDeg, x, y);
         currentHeading = theta;
@@ -57,11 +58,10 @@ void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead 
         }
         double curvatureHeading = M_PI / 2 - toRadian(currentHeading);
         curvature = curvatureToAPoint(currentPose, curvatureHeading, carrotPoint);
-
         double angularError = toNegPos180(toDeg(atan2(carrotPoint[0] - x, carrotPoint[1] - y)) - getAbsoluteHeading());
         double curvScaleFactor = cos(toRadian(angularError));
         // Velocity modifiers
-        double linearVoltage = 22000 * curvScaleFactor;
+        double linearVoltage = 22000 * curvScaleFactor + derivative * kD;
         double feedAngularForward = 110000;
         double angularVoltage = feedAngularForward * curvature;
         setDrive(speedRatio * clamp_min_voltage(left_velocity_scaling(linearVoltage, angularVoltage), 0), speedRatio * clamp_min_voltage(right_velocity_scaling(linearVoltage, angularVoltage), 0));
@@ -69,7 +69,6 @@ void follow(Curve path, double timeOut, double speedRatio = 1, double lookAhead 
         cout << " " << endl;
         time++;
         vexDelay(10);
-        
     }
     setDrive(0, 0);
 }
