@@ -560,7 +560,7 @@ void blueReginalAWP() {
 }
 
 int snowDaySkillsClamp1() {
-    vexDelay(700);
+    vexDelay(600);
     mogo.set(true);
     return 0;
 }
@@ -569,7 +569,7 @@ int snowDaySkillsWall1() {
     vexDelay(600);
     armkP = 500;
     armkD = 700;
-    targetLadybrownDeg = 25.5;
+    targetLadybrownDeg = 22.3;
     return 0;
 }
 
@@ -586,7 +586,7 @@ void snowDaySkills() {
     imu.setRotation(90, rotationUnits::deg);
     x = -62;
     y = 0;
-    driveStraight(1);
+    driveStraight(0.999);
     conveyor.spin(fwd, 12000, voltageUnits::mV);
     vexDelay(800);
     conveyor.spin(fwd, 0, voltageUnits::mV);
@@ -601,25 +601,63 @@ void snowDaySkills() {
     follow(c1, 5000, 0.8, 24, 0, 800);
     vexDelay(200);
     setDrive(-8000, 8000);
-    vexDelay(600);
+    vexDelay(450);
     task tt(snowDaySkillsWall1);
-    Curve c2(Vector2d(11.328, 40.903), Vector2d(3.6, 40.242), Vector2d(4.5, 37.132), Vector2d(3, 60.573));
+    Curve c2(Vector2d(11.328, 40.903), Vector2d(3.6, 40.242), Vector2d(2.5, 37.132), Vector2d(2.7, 60));
     spinning = false;
-    follow(c2, 3000, 0.6, 10);
-    vexDelay(800);
+    follow(c2, 4000, 0.5, 7);
+    vexDelay(600);
     conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
     armkP = 500;
     armkD = 500;
-    targetLadybrownDeg = 140;
-    vexDelay(1000);
-    targetLadybrownDeg = 0;
+    targetLadybrownDeg = 132;
+    vexDelay(600);
     driveStraightGyro(-15);
+    targetLadybrownDeg = 0;
     conveyor.spin(fwd, 12000, voltageUnits::mV);
-    Curve c3(Vector2d(-12.441, 48.142), Vector2d(-29.661, 48.142), Vector2d(-36.03, 48.142), Vector2d(-51.081, 48.142));
+    Curve c3(Vector2d(-12.441, 44.142), Vector2d(-29.661, 44.142), Vector2d(-36.03, 44.142), Vector2d(-55.081, 46.142));
     spinning = true;
-    follow(c3, 5000, 0.5, 25);
+    follow(c3, 5000, 0.6, 24, 0, 1000);
     vexDelay(200);
     driveStraightGyro(-15);
+    turnToHeading(-5, 1, 1, 0, 360, 36, 2100);
+    driveStraightGyro(13);
+    vexDelay(200);
+    turnToHeading(110);
+    spinning = false;
+    conveyor.spin(fwd, 0, voltageUnits::mV);
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    mogo.set(false);
+    driveStraightGyro(-13);
+    driveStraightGyro(13);
+    Curve c4(Vector2d(-43.714, 55.779), Vector2d(-43.714, 39.691), Vector2d(-43.714, 2.226), Vector2d(-43.714, 0.507));
+    follow(c4, 6000, 0.7, 24, 1);
+    driveToPoint(-43.714, -17, 4500);
+    mogo.set(true);
+    vexDelay(100);
+    Curve c5(Vector2d(-30.84, -15.891), Vector2d(0.309, -60.448), Vector2d(17.915, -38.076), Vector2d(25.869, -43.871));
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    follow(c5, 5000, 0.8, 24, 0, 800);
+    vexDelay(200);
+    setDrive(8000, -8000);
+    vexDelay(450);
+    task ttttt(snowDaySkillsWall1);
+    Curve c6(Vector2d(11.328, -40.903), Vector2d(8, -40.242), Vector2d(4.5, -42.632), Vector2d(4.5, -60.6));
+    spinning = false;
+    follow(c6, 4000, 0.5, 7);
+    vexDelay(600);
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    armkP = 500;
+    armkD = 500;
+    targetLadybrownDeg = 132;
+    vexDelay(600);
+    driveStraightGyro(-15);
+    targetLadybrownDeg = 0;
+    Curve c7(Vector2d(-12.441, -44.142), Vector2d(-29.661, -44.142), Vector2d(-36.03, -44.142), Vector2d(-55.081, -46.142));
+    // conveyor.spin(fwd, 12000, voltageUnits::mV);
+    // spinning = true;
+    // follow(c7, 5000, 0.6, 24, 0, 1000);
     vexDelay(10000000);
 }
 #endif // !AUTONS_H
