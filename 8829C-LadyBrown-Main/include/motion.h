@@ -13,11 +13,11 @@
  * @param kI A constant kI value fed into the turn PID loop. May be tuned. 
  * @param kD A constant kD value fed into the turn PID loop. May be tuned. 
  */
-void turnToHeading(double heading, double speedRatio = 1, double speedCap = 1, double reversed = 0, double kP = 360, double kI = 25, double kD = 2800) {
+void turnToHeading(double heading, double speedRatio = 1, double speedCap = 1, double reversed = 0, double kP = 360, double kI = 30, double kD = 3000) {
     resetPID();
     double time = 0;
     double turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
-    while (fabs(turnError) > 0.3 || fabs(imu.gyroRate(zaxis, velocityUnits::dps)) / 100 > 0.3) {
+    while (fabs(turnError) > 0.6 || fabs(imu.gyroRate(zaxis, velocityUnits::dps)) / 100 > 0.3) {
         turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
         double driveOutput = angularPID(turnError, kP, kI, kD);
         if (fabs(driveOutput) > 12000 && driveOutput > 0) driveOutput = 12000;
@@ -27,7 +27,7 @@ void turnToHeading(double heading, double speedRatio = 1, double speedCap = 1, d
         cout << "error: " << turnError << " drive output: " << driveOutput << " derivative: " << imu.gyroRate(zaxis, velocityUnits::dps) / 100 << endl;
         setDrive(driveOutput, -driveOutput);
         time += 10;
-        vexDelay(10); 
+        vexDelay(10);
     }
     cout << "settled: " << time << endl;
     setDrive(0, 0);
@@ -40,22 +40,27 @@ void turnToHeading(double heading, double speedRatio = 1, double speedCap = 1, d
  * @param kI A constant kI value fed into the lateral PID loop. May be tuned. 
  * @param kD A constant kD value fed into the lateral PID loop. May be tuned. 
  */
-void driveStraight(double distance, double speedRatio = 1, double speedCap = 1, double kP = 2000, double kI = 230, double kD = 57000) {
+void driveStraight(double distance, double speedRatio = 1, double speedCap = 1, double timeOut = 10000, double kP = 2000, double kI = 200, double kD = 50000) {
     resetPID();
     double error = distance;
     double leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
+
+    double currentVertical = verticalTrackingWheel.position(rotationUnits::rev) * verticalDiameter * M_PI;
+    double prevVertical = currentVertical;
     double leftCurrentReading = leftSum / 3;
     double leftPrevReading = leftCurrentReading;
     double distaceTraveled = 0;
-    while (fabs(error) > 0.07 || lM.velocity(rpm) * driveWheelDiameter / 6000 > 0.02) {
+    double time = 0;
+    while ((fabs(error) > 0.07 || lM.velocity(rpm) * driveWheelDiameter / 6000 > 0.01) && time < timeOut) {
         // Get drivetrain distance reading
         leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
         leftCurrentReading = leftSum / 3;
-        double deltaLeft = leftCurrentReading - leftPrevReading;
+        currentVertical = verticalTrackingWheel.position(rotationUnits::rev) * verticalDiameter * M_PI;
+        double deltaLeft = currentVertical - prevVertical;
         distaceTraveled += deltaLeft;
         // Error calculation
         error = distance - distaceTraveled;
@@ -65,29 +70,35 @@ void driveStraight(double distance, double speedRatio = 1, double speedCap = 1, 
         cout << "error: " << error << " drive output: " << driveOutput << endl;
         setDrive(speedCap * driveOutput, speedCap * driveOutput);
         leftPrevReading = leftCurrentReading;
+        prevVertical = currentVertical;
+        time += 10;
         vexDelay(10);
     }
     setDrive(0, 0);
 }
 
-void driveStraightGyro(double distance, double speedRatio = 1, double kP = 2000, double kI = 230, double kD = 57000) {
+void driveStraightGyro(double distance, double speedRatio = 1, double speedScale = 1, double timeOut = 6000, double kP = 2800, double kI = 250, double kD = 57000) {
     resetPID();
+    double time = 0;
     double error = distance;
     double targetDeg = imu.rotation(rotationUnits::deg);
     double degError = targetDeg - imu.rotation(rotationUnits::deg);
     double leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
+    double currentVertical = verticalTrackingWheel.position(rotationUnits::rev) * verticalDiameter * M_PI;
+    double prevVertical = currentVertical;
     double leftCurrentReading = leftSum / 3;
     double leftPrevReading = leftCurrentReading;
     double distaceTraveled = 0;
-    while (fabs(error) > 0.2 || lM.velocity(rpm) * driveWheelDiameter / 6000 > 0.02) {
+    while ((fabs(error) > 0.2 || lM.velocity(rpm) * driveWheelDiameter / 6000 > 0.02) && time < timeOut) {
         // Get drivetrain distance reading
         leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
         (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
         leftCurrentReading = leftSum / 3;
-        double deltaLeft = leftCurrentReading - leftPrevReading;
+        currentVertical = verticalTrackingWheel.position(rotationUnits::rev) * verticalDiameter * M_PI;
+        double deltaLeft = currentVertical - prevVertical;
         distaceTraveled += deltaLeft;
         // Error calculation
         error = distance - distaceTraveled;
@@ -96,8 +107,11 @@ void driveStraightGyro(double distance, double speedRatio = 1, double kP = 2000,
         double turnOutput = angularPID(degError, 500, 10, 2000);
         driveOutput = clamp(driveOutput, -12000 * speedRatio, 12000 * speedRatio);
         turnOutput = clamp(turnOutput, -12000 * speedRatio, 12000 * speedRatio);
-        setDrive(left_velocity_scaling(driveOutput, turnOutput), right_velocity_scaling(driveOutput, turnOutput));
+        cout << "error: " << error << " drive output: " << driveOutput << endl;
+        setDrive(speedScale * left_velocity_scaling(driveOutput, turnOutput), speedScale * right_velocity_scaling(driveOutput, turnOutput));
         leftPrevReading = leftCurrentReading;
+        prevVertical = currentVertical;
+        time += 10;
         vexDelay(10);
     }
     setDrive(0, 0);
@@ -115,6 +129,7 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
     resetPID();
     double leftError = leftDistance;
     double rightError = rightDistance;
+
     double leftSum = ((lB.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lM.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)) + 
     (lF.position(rotationUnits::rev) * (driveWheelDiameter * M_PI) * (dt_rpm / 600)));
@@ -160,14 +175,15 @@ void curveDrive(double leftDistance, double rightDistance, double speedRatio = 1
 /** 
  * Functions below utilize odometry!!!
  * */
-void driveToPoint(double targetX, double targetY, double maxVel = 12000, double minVel = 0, double drivekP = 2300, double drivekI = 230, double drivekD = 90000, double angularkP = 360, double angularkI = 22, double angularkD = 3000) {
+void driveToPoint(double targetX, double targetY, double maxVel = 12000, double minVel = 0, double timeOut = 5000, double drivekP = 2300, double drivekI = 230, double drivekD = 90000, double angularkP = 360, double angularkI = 30, double angularkD = 3000) {
     resetPID();
     Vector2d targetPose = Vector2d(targetX, targetY);
     double targetDeg = toDeg(atan2(targetX - x, targetY - y));
     double angularError = targetDeg - getAbsoluteHeading();
     double driveError = (targetPose - bot_position).norm();
     bool lineSettled = is_line_settled(targetX, targetY, targetDeg, x, y);
-    while (!lineSettled) {
+    double time = 0;
+    while (!lineSettled && time <= timeOut) {
         driveError = (targetPose - bot_position).norm();
         lineSettled = is_line_settled(targetX, targetY, targetDeg, x, y);
         angularError = toNegPos180(toDeg(atan2(targetX - x, targetY - y)) - getAbsoluteHeading());
@@ -184,17 +200,18 @@ void driveToPoint(double targetX, double targetY, double maxVel = 12000, double 
         driveOutput = clamp_min_voltage(driveOutput, minVel);
         cout << "driveError: " << driveError << " angularError: " << angularError << " driveOutput: " << driveOutput << " angularOutput: " << turnOutput << endl;
         cout << " " << endl;
+        time += 10;
         setDrive(left_velocity_scaling(driveOutput, turnOutput), right_velocity_scaling(driveOutput, turnOutput));
         vexDelay(10);
     }
     setDrive(0, 0);
 }
-void turnToPoint(double targetX, double targetY, double kP = 360, double kI = 22, double kD = 3000) {
+void turnToPoint(double targetX, double targetY, double kP = 370, double kI = 32, double kD = 2900) {
     resetPID();
     Vector2d targetPose = Vector2d(targetX, targetY);
     double targetDeg = toNegPos180(toDeg(atan2((targetPose - bot_position)[0], (targetPose - bot_position)[1])));
     double angularError = toNegPos180(targetDeg - getAbsoluteHeading());
-    while (fabs(angularError) > 0.3 || imu.gyroRate(zaxis, dps) / 100 > 0.3) {
+    while (fabs(angularError) > 0.5 || imu.gyroRate(zaxis, dps) / 100 > 0.3) {
         targetDeg = toNegPos180(toDeg(atan2((targetPose - bot_position)[0], (targetPose - bot_position)[1])));
         angularError = toNegPos180(targetDeg - getAbsoluteHeading());
         double driveOutput = angularPID(angularError, kP, kI, kD);
@@ -206,4 +223,51 @@ void turnToPoint(double targetX, double targetY, double kP = 360, double kI = 22
     setDrive(0, 0);
 }
 
+void swingToPoint(double targetX, double targetY, bool left = 1, double kP = 360, double kI = 30, double kD = 3000) {
+    resetPID();
+    Vector2d targetPose = Vector2d(targetX, targetY);
+    double targetDeg = toNegPos180(toDeg(atan2((targetPose - bot_position)[0], (targetPose - bot_position)[1])));
+    double angularError = toNegPos180(targetDeg - getAbsoluteHeading());
+    while (fabs(angularError) > 0.5 || imu.gyroRate(zaxis, dps) / 100 > 0.3) {
+        targetDeg = toNegPos180(toDeg(atan2((targetPose - bot_position)[0], (targetPose - bot_position)[1])));
+        angularError = toNegPos180(targetDeg - getAbsoluteHeading());
+        double driveOutput = angularPID(angularError, kP, kI, kD);
+        driveOutput = clamp(driveOutput, -12000, 12000);
+        if (left) {
+            setDrive(driveOutput, 0);
+        }
+        else {
+            setDrive(0, -driveOutput);
+        }
+        
+        cout << "error: " << angularError << endl;
+        vexDelay(10);
+    }
+    setDrive(0, 0);
+}
+
+void swingToHeading(double heading, bool left = 1, double speedRatio = 1, double speedCap = 1, double reversed = 0, double kP = 360, double kI = 25, double kD = 2800) {
+    resetPID();
+    double time = 0;
+    double turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
+    while (fabs(turnError) > 0.6 || fabs(imu.gyroRate(zaxis, velocityUnits::dps)) / 100 > 0.3) {
+        turnError = heading - imu.rotation(rotationUnits::deg) - reversed * 180;
+        double driveOutput = angularPID(turnError, kP, kI, kD);
+        if (fabs(driveOutput) > 12000 && driveOutput > 0) driveOutput = 12000;
+        else if (fabs(driveOutput) > 12000 && driveOutput < 0) driveOutput = -12000;
+        driveOutput *= speedRatio;
+        clamp(driveOutput, -12000 * speedCap, 12000 * speedCap);
+        cout << "error: " << turnError << " drive output: " << driveOutput << " derivative: " << imu.gyroRate(zaxis, velocityUnits::dps) / 100 << endl;
+        if (left) {
+            setDrive(driveOutput, 0);
+        }
+        else {
+            setDrive(0, -driveOutput);
+        }
+        time += 10;
+        vexDelay(10); 
+    }
+    cout << "settled: " << time << endl;
+    setDrive(0, 0);
+}
 #endif // !MOTION_H

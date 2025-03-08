@@ -59,6 +59,40 @@ double left_velocity_scaling(double drive_output, double heading_output){
     }
     return drive_output+heading_output;
 }
+
+/**
+ * Velocity scaling to keep from applying more than 600 rpm to either side of the drive.
+ * Divides both drive and heading output proportionally to get a similar result to the
+ * desired one.
+ * 
+ * @param drive_output The forward output of the drive.
+ * @param heading_output The angular output of the drive.
+ * @return The scaled voltage for the left side of the robot.
+ */
+double leftVelocityScaling(double drive_output, double heading_output){
+    double ratio = std::max(std::fabs(drive_output+heading_output), std::fabs(drive_output-heading_output))/600.0;
+    if (ratio > 1) {
+        return (drive_output+heading_output)/ratio;
+    }
+    return drive_output+heading_output;
+}
+
+/**
+ * Velocity scaling to keep from applying more than 600 rpm to either side of the drive.
+ * Divides both drive and heading output proportionally to get a similar result to the
+ * desired one.
+ * 
+ * @param drive_output The forward output of the drive.
+ * @param heading_output The angular output of the drive.
+ * @return The scaled voltage for the right side of the robot.
+ */
+double rightVelocityScaling(double drive_output, double heading_output){
+    double ratio = std::max(std::fabs(drive_output+heading_output), std::fabs(drive_output-heading_output))/600.0;
+    if (ratio > 1) {
+        return (drive_output-heading_output)/ratio;
+    }
+    return drive_output-heading_output;
+}
 /**
  * Voltage scaling to keep from applying more than 12 volts to either side of the drive.
  * Divides both drive and heading output proportionally to get a similar result to the
@@ -89,7 +123,7 @@ double right_velocity_scaling(double drive_output, double heading_output){
  * @return Whether the robot can be considered settled.
  */
 bool is_line_settled(float targetX, float targetY, float desired_angle_deg, float currentX, float currentY){
-    return( (targetY-currentY) * cos(toRadian(desired_angle_deg)) <= -(targetX-currentX) * sin(toRadian(desired_angle_deg)));
+    return((targetY-currentY) * cos(toRadian(desired_angle_deg)) <= -(targetX-currentX) * sin(toRadian(desired_angle_deg)));
 }
 
 double getAbsoluteHeading() {

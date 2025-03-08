@@ -14,21 +14,22 @@ Vector2d bot_position = Vector2d(0, 0);
 int track() {
     double currentVertial = verticalTrackingWheel.position(rotationUnits::deg) / 360 * verticalDiameter * M_PI;
     double currentHorizontal = horizontalTrackingWheel.position(rotationUnits::deg) / 360 * horizontalDiameter * M_PI;
-    double leftReading = (lM.position(rotationUnits::deg) + lF.position(rotationUnits::deg) + lB.position(rotationUnits::deg)) / 5;
-    double prevLeftReading = (lM.position(rotationUnits::deg) + lF.position(rotationUnits::deg) + lB.position(rotationUnits::deg)) / 5;
+    double leftReading = (lM.position(rotationUnits::rev) + lF.position(rotationUnits::rev) + lB.position(rotationUnits::rev)) / 3 * dt_rpm / 600 * M_PI * driveWheelDiameter;
+    double prevLeftReading = (lM.position(rotationUnits::rev) + lF.position(rotationUnits::rev) + lB.position(rotationUnits::rev)) / 3 * dt_rpm / 600 * M_PI * driveWheelDiameter;
     double prevVertical = currentVertial;
     double prevHorizontal = currentHorizontal;
     double currentHeading = imu.rotation(rotationUnits::deg);
     double prevHeading = currentHeading;
     while (1) {
-        currentHeading = imu.rotation(rotationUnits::deg);
+        currentHeading = imu.rotation();
         double deltaHeading = currentHeading - prevHeading;
         double avgHeading = (currentHeading + prevHeading) / 2;
-        leftReading = (lM.position(rotationUnits::deg) + lF.position(rotationUnits::deg) + lB.position(rotationUnits::deg)) / 5;
-        double currentVertial = verticalTrackingWheel.position(rotationUnits::deg) / 360 * verticalDiameter * M_PI;
-        double currentHorizontal = horizontalTrackingWheel.position(rotationUnits::deg) / 360 * horizontalDiameter * M_PI;
-        double deltaY = currentVertial - prevVertical;
-        double deltaX = currentHorizontal - prevHorizontal;
+        // leftReading = (lM.position(rotationUnits::rev) + lF.position(rotationUnits::rev) + lB.position(rotationUnits::rev)) / 3 * dt_rpm / 600 * M_PI * driveWheelDiameter;
+        double currentVertial = verticalTrackingWheel.position(rotationUnits::rev) * verticalDiameter * M_PI;
+        double currentHorizontal = horizontalTrackingWheel.position(rotationUnits::rev) * horizontalDiameter * M_PI;
+
+        double deltaY = (currentVertial - prevVertical);
+        double deltaX = (currentHorizontal - prevHorizontal);
         double localX;
         double localY;
         if (deltaHeading == 0) {
@@ -78,13 +79,14 @@ void calibrate() {
     y = 0;
     theta = 0;
     task tracking(track);
+    tracking.setPriority(0);
 }
 
 int screen() {
     while (1) {
         Brain.Screen.printAt(10, 10, "x: %f", x);
         Brain.Screen.printAt(10, 35, "y: %f", y);
-        Brain.Screen.printAt(10, 60, "theta: %f", theta);
+        Brain.Screen.printAt(10, 60, "theta: %f", imu.rotation());
         vexDelay(100);
     }
     return 0;

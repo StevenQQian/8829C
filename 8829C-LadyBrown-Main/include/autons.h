@@ -7,657 +7,546 @@
 #include "pursuit.h"
 #include "intake.h"
 
-void test() {
-    // Drive straight forward for 24 inches
-    driveStraight(24, 1);
-    // Turn towards 90 degrees on the cartesian plane
-    // turnToHeading(90, 1);
-    // turnToHeading(90);
-    // follow(testDrive2, 3000, 1, 12, 0.8);
+double loadingPos = 91;
+int skillsFirstAlliance() {
+    vexDelay(300);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    return 0;
 }
 
-void blueRingSide() {
-    imu.setRotation(180, rotationUnits::deg);
-    //  Drive towards the mobile goal in front and clamp 
-    driveStraight(-18);
-    driveStraight(-6);
-    mogo.set(true);
-    vexDelay(100);
-
-    // Turn towards the first 2 stack and intake the bottom ring
-    turnToHeading(90, 1, 1, 0, 360, 33, 2600);
-    spinning = true;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(30);
-
-    // Turn towards the two middle stacks and intake them separately
-    turnToHeading(-3);
-    driveStraight(17);
-    vexDelay(100);
-    driveStraight(-15);
-    turnToHeading(-21);
-    driveStraight(19);
-    vexDelay(100);
-
-    // Back out from the middle and drop the mobile goal
-    turnToHeading(20);
-    driveStraight(-36.7, 1, 0.7);
-    spinning = false;
-    // Turn towards the last two stack in front of the alliance stake and store the top ring
-    turnToHeading(-90);
-    mogo.set(false);
-    blueStoring = true;
-
-    driveStraight(37, 1, 0.6);
-    vexDelay(100);
-
-    // Score the ring onto the alliance stake
-    turnToHeading(-65, 1, 1, 0, 360, 33, 2600);
-    lB.setBrake(coast);
-  lM.setBrake(coast);
-  lF.setBrake(coast);
-
-  rB.setBrake(coast);
-  rM.setBrake(coast);
-  rF.setBrake(coast);
-    driveStraight(-15);
-    driveStraight(2.5);
-    turnToHeading(0);
-    blueStoring = false;
-    driveStraight(-9.8);
-    driveStraight(1.9);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(1300);
-    // setDrive(12000, 12000);
-    // vexDelay(500);
-    // setDrive(0, 0);
-}
-
-void redRingSide() {
-    imu.setRotation(-180, rotationUnits::deg);
-    //  Drive towards the mobile goal in front and clamp 
-    driveStraight(-18);
-    driveStraight(-6);
-    mogo.set(true);
-    vexDelay(100);
-
-    // Turn towards the first 2 stack and intake the bottom ring
-    turnToHeading(-90, 1, 1, 0, 360, 33, 2600);
-    spinning = true;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(26);
-
-    // Turn towards the two middle stacks and intake them separately
-    turnToHeading(5);
-    driveStraight(18);
-    vexDelay(100);
-    driveStraight(-10);
-    turnToHeading(23);
-    driveStraight(16);
-    vexDelay(100);
-
-    // Back out from the middle and drop the mobile goal
-    turnToHeading(-20);
-    driveStraight(-37.5);
-    mogo.set(false);
-    spinning = false;
-    // Turn towards the last two stack in front of the alliance stake and store the top ring
-    turnToHeading(90);
-    redStoring = true;
-
-    driveStraight(37, 1, 0.5);
-    vexDelay(100);
-
-    // Score the ring onto the alliance stake
-    turnToHeading(65);
-    lB.setBrake(coast);
-    lM.setBrake(coast);
-    lF.setBrake(coast);
-
-    rB.setBrake(coast);
-    rM.setBrake(coast);
-    rF.setBrake(coast);
-    driveStraight(-17);
-    driveStraight(2);
-    turnToHeading(0);
-    redStoring = false;
-    driveStraight(-11);
-    driveStraight(1.5);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
+int skillsFirstBrown() {
     vexDelay(700);
-    setDrive(12000, 12000);
-    vexDelay(500);
-    setDrive(0, 0);
-}
-int mogoRushFight1() {
-    vexDelay(700);
-    mogo.set(true);
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    ladyBrownStat = 1;
+    spinning = false;
     return 0;
 }
 
-int mogoRushFight2() {
-    vexDelay(720);
-    blueStoring = true;
-    return 0;
-}
-
-int skillsStore1() {
-    vexDelay(400);
-    redStoring = true;
-    return 0;
-}
-
-int skillsStore2() {
-    vexDelay(1100);
-    redStoring = true;
+int skillsFirstIntake() {
+    vexDelay(1200);
     conveyor.spin(fwd, 12000, voltageUnits::mV);
-    return 0;
-}
-
-int skillsStore3() {
     vexDelay(300);
     redStoring = true;
     return 0;
 }
 
-void redSideRush() {
-    imu.setRotation(-99, rotationUnits::deg);
-    x = -60;
-    y = -60;
-    lB.setBrake(hold);
-    lM.setBrake(hold);
-    lF.setBrake(hold);
-
-    rB.setBrake(hold);
-    rM.setBrake(hold);
-    rF.setBrake(hold);
-    driveStraight(-20, 1, 1, 2800, 250, 56000);
-    task t1(mogoRushFight1);
-    driveToPoint(-26.75, -52.75, 9000);
-    vexDelay(70);
-    turnToHeading(-75);
-    task t2(mogoRushFight2);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(40, 1, 0.8);
-
-    turnToHeading(0);
-    mogo.set(false);
-    vexDelay(100);
-    driveStraight(14.75);
-    turnToHeading(-92);
-    driveStraight(-17, 1, 0.7);
-    mogo.set(true);
-    vexDelay(100);
-    blueStoring = false;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(20);
-    turnToHeading(0);
-    mogo.set(false);
-    blueStoring = true;
-    driveStraight(33.25, 1, 0.5);
-    turnToHeading(17);
-    driveStraight(-19);
-    driveStraight(3);
-    turnToHeading(90);
-    driveStraight(-11);
-    driveStraight(1.2);
-    blueStoring = false;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
+int skillsSecondIntake() {
     vexDelay(700);
-    // setDrive(12000, 12000);
-    // vexDelay(500);
-    // setDrive(0, 0);
-}
-
-void blueSideRush() {
-    imu.setRotation(99, rotationUnits::deg);
-    x = 60;
-    y = -60;
-    lB.setBrake(hold);
-    lM.setBrake(hold);
-    lF.setBrake(hold);
-
-    rB.setBrake(hold);
-    rM.setBrake(hold);
-    rF.setBrake(hold);
-    driveStraight(-20, 1, 1, 2800, 250, 56000);
-    task t1(mogoRushFight1);
-    driveToPoint(26.75, -52.75, 9000);
-    vexDelay(70);
-    turnToHeading(75);
-    task t2(mogoRushFight2);
+    redStoring = false;
     conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(40, 1, 0.8);
-
-    turnToHeading(0);
-    mogo.set(false);
-    vexDelay(100);
-    driveStraight(14.75);
-    turnToHeading(92);
-    driveStraight(-17, 1, 0.7);
-    mogo.set(true);
-    vexDelay(100);
-    blueStoring = false;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(20);
-    turnToHeading(0);
-    mogo.set(false);
-    blueStoring = true;
-    driveStraight(33.25, 1, 0.5);
-    turnToHeading(-17);
-    driveStraight(-19);
-    driveStraight(3);
-    turnToHeading(-90);
-    driveStraight(-11);
-    driveStraight(1.2);
-    blueStoring = false;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(700);
-    setDrive(12000, 12000);
-    vexDelay(100);
-    setDrive(0, 0);
-}
-
-void skills() {
-    lB.setBrake(hold);
-    lM.setBrake(hold);
-    lF.setBrake(hold);
-
-    rB.setBrake(hold);
-    rM.setBrake(hold);
-    rF.setBrake(hold);
-    blueSorting = false;
-    imu.setRotation(-90, rotationUnits::deg);
-    x = -64.6;
-    y = -24;
-    driveStraight(-10, 1, 0.8);
-    mogo.set(true);
-    vexDelay(60);
-    turnToHeading(90, 1, 1, 0, 360, 33, 2600);
-    Curve c1 = Curve(Vector2d(-32.859, -24.11), Vector2d(-22.721, -31.382), Vector2d(-16.788, -37.333), Vector2d(-8.413, -56.743));
     spinning = true;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    follow(c1, 4000, 0.6, 12);
-    vexDelay(1000);
-    turnToPoint(-24.7, -56);
-    Curve c2 = Curve(Vector2d(-29.553, -48.148), Vector2d(-42.115, -52.352), Vector2d(-49.804, -53.767), Vector2d(-62.236, -52.691));
+    return 0;
+}
 
-    follow(c2, 4000, 0.5, 12);
-    vexDelay(800);
-    conveyor.spin(fwd, 0, voltageUnits::mV);
-    spinning = false;
-    turnToHeading(225, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-5);
-    turnToPoint(-54.5, -70, 360, 33, 2600);
-    // task tt(skillsStore1);
-    redStoring = true;
-    conveyor.spin(fwd, -12000, voltageUnits::mV);
-    vexDelay(200);
+
+
+
+void provSkills() {
+    lB.setBrake(brake);
+    lM.setBrake(brake);
+    lF.setBrake(brake);
+    rB.setBrake(brake);
+    rM.setBrake(brake);
+    rF.setBrake(brake);
+    x = -62.5;
+    y = 0;
+    imu.setRotation(-90, rotationUnits::deg);
+    manual = false;
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    ladyBrownStat = 1;
+    task t(skillsFirstAlliance);
+    // score the first alliance stake
+    driveStraightGyro(-5);
+    vexDelay(600);
+    targetLadybrownDeg = 600;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    vexDelay(500);
+    ladyBrownStat = 0;
+    // clamp the first mobile goal and score two rings on it
+    autoClampActive = true;
+    driveStraightGyro(-4);
+    targetLadybrownDeg = 0;
+    driveToPoint(-47, 26, 5000);
+    Curve c1(Vector2d(-30.986, 27.17), Vector2d(-17.983, 27.068), Vector2d(-9.609, 43), Vector2d(21.228, 46));
     conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(14);
-    turnToPoint(0, -15);
-    mogo.set(false);
-    driveStraight(-9.5);
+    spinning = true;
+    newFollow(c1, 5000, 0.8, 19);
+    vexDelay(200);
+    task tt(skillsFirstBrown);
+    // store a ring on the arm
+    driveStraightGyro(17.5, 0.7, 0.7);
+    x = 66 - disFront.objectDistance(distanceUnits::in) * cos(toRadian(90 - imu.rotation()));
+    vexDelay(120);
+    // score two rings on the first wall stake
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    driveToPoint(6, 39, 7000);
+    conveyor.spin(fwd, 5000, voltageUnits::mV);
     vexDelay(50);
-    driveToPoint(-57, -5.8, 7000, 0, 2300, 230, 60000);
-
-    redStoring = false;
-    turnToHeading(90, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-19.3, 1, 0.9);
-    conveyor.spin(fwd, -4000, voltageUnits::mV);
-    driveStraight(1.4);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    x = -60;
-    y = 0;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(700);
-    conveyor.spin(fwd, 0, voltageUnits::mV);
-    driveStraight(17.2);
-    turnToHeading(180, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-19, 1, 0.6);
-    mogo.set(true);
+    turnToPoint(-3, 70);
+    driveToPoint(0, 70, 8000, 0, 1300);
+    setDrive(11000, 11000);
     vexDelay(100);
-    turnToHeading(92);
-    Curve c3 = Curve(Vector2d(-32.969, 16.052), Vector2d(-23.933, 24.443), Vector2d(-13.576, 35.551), Vector2d(-2.091, 52.261));
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    spinning = true;
-    follow(c3, 4000, 0.6, 12);
-
-    vexDelay(700);
-    turnToHeading(-106, 1, 1, 0, 360, 33, 2600);
-    Curve c4 = Curve(Vector2d(-28.451, 51.845), Vector2d(-37.487, 47.437), Vector2d(-45.641, 47.658), Vector2d(-54, 48.404));
-
-    follow(c4, 3000, 0.5, 12);
-
-    vexDelay(300);
-    turnToHeading(-60, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-8);
-    turnToHeading(0, 1, 1, 0, 360, 33, 2600);
-    driveStraight(17);
-    vexDelay(500);
-    turnToHeading(130, 1, 1, 0, 360, 33, 2600);
-    conveyor.spin(fwd, -12000, voltageUnits::mV);
-    mogo.set(false);
-    spinning = false;
-    driveStraight(-11);
-    conveyor.spin(fwd, 0, voltageUnits::mV);
-    Curve c5 = Curve(Vector2d(-48.027, 60.11), Vector2d(-32.423, 60.99), Vector2d(-7.311, 39.893), Vector2d(36.531, 23.981));
-    task ttt(skillsStore2);
-
-    follow(c5, 5000, 0.6, 15);
-    turnToHeading(0, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-26, 1, 0.7);
-    driveToPoint(48, 1.4, 8000);
-    turnToHeading(-90, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-18.7, 1, 0.8);
-    x = 60;
-    y = 0;
+    setDrive(0, 0);
     vexDelay(200);
-    redStoring = false;
-    blueSorting = true;
-    conveyor.spin(fwd, -4000, voltageUnits::mV);
-    driveStraight(1.1);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(700);
-    conveyor.spin(fwd, 0, voltageUnits::mV);
-    driveStraight(4);
-    turnToHeading(-175, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-55.1, 1, 1);
-    
-    vexDelay(200);
-    driveToPoint(45.5, 4, 8000);
-    turnToHeading(0, 1, 1, 0, 360, 33, 2600);
-    driveStraight(-16, 1, 0.5);
-    mogo.set(true);
-    vexDelay(100);
-    turnToPoint(24, -24);
-    Curve c6 = Curve(Vector2d(16.095, -23.516), Vector2d(19.508, -33.756), Vector2d(21.215, -38.876), Vector2d(22.653, -40.166));
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    spinning = true;
-    follow(c6, 5000, 0.6, 12);
-    vexDelay(200);
-    turnToHeading(-264, 1, 1, 0, 360, 33, 2600);
-    driveStraight(16.75, 1, 0.6);
-    vexDelay(200);
-    driveStraight(-9);
-    turnToHeading(-235, 1, 1, 0, 360, 33, 2600);
-    spinning = false;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    task tttt(skillsStore3);
-    driveStraight(17.5);
-    vexDelay(100);
-    turnToHeading(-432, 1, 1, 0, 360, 33, 2600);
-    mogo.set(false);
-    driveStraight(-14.5, 1, 0.7);
-    armkP = 500;
-    armkD = 700;
-    targetLadybrownDeg = 24.5;
-    redStoring = false;
-    driveToPoint(0.5, -50, 7000);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    turnToPoint(1.5, -70);
-    conveyor.spin(fwd, -12000, voltageUnits::mV);
-    armkP = 500;
-    armkD = 500;
-    targetLadybrownDeg = 132;
-    vexDelay(500);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    driveStraight(18.5, 1, 0.6);
-    driveStraight(-20);
-    vexDelay(1000000);
-}
-
-int tmogo() {
-    vexDelay(820);
-    mogo.set(true);
-    return 0;
-}
-
-int ttmogo() {
+    lock = true;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    armkP = 50;
+    armkD = 0;
+    targetLadybrownDeg = 580;
     vexDelay(400);
-    mogo.set(false);
-    return 0;
-}
-
-int storettt() {
-    vexDelay(200);
-    redStoring = true;
-    return 0;
-}
-
-void redRegionalAWP() {
-    blueSorting = true;
-    lB.setBrake(hold);
-    lM.setBrake(hold);
-    lF.setBrake(hold);
-
-    rB.setBrake(hold);
-    rM.setBrake(hold);
-    rF.setBrake(hold);
-    imu.setRotation(-90, rotationUnits::deg);
-    x = -52.396;
-    y = 22.866;
-    Curve mogoClamp(Vector2d(-43.795, 21.866), Vector2d(-32.776, 21.866), Vector2d(-39.14, 21.866), Vector2d(-32.291, 21.866));
-    Curve firstStack(Vector2d(-25.493, 32.528), Vector2d(-25.493, 42.005), Vector2d(-28.993, 33.751), Vector2d(-28.993, 36.726));
-    Curve middleFirstStack(Vector2d(-14.016, 49.702), Vector2d(-5.953, 49.079), Vector2d(-16.696, 48.5), Vector2d(-14.011, 48.5));
-    Curve backUpFromFirstStack(Vector2d(-13.014, 38.87), Vector2d(-14.819, 38.87), Vector2d(-15.911, 37.87), Vector2d(-25.276, 37.87));
-    Curve middleSecondStack(Vector2d(-18.025, 40.267), Vector2d(-19.038, 41.484), Vector2d(-18.103, 36.7), Vector2d(-14.206, 36.7));
-    Curve backUpFromMiddle(Vector2d(-11.661, 34.038), Vector2d(-19.222, 23.586), Vector2d(-31, 20.358), Vector2d(-49.02, 20.358));
-    Curve intakeAllianceStack(Vector2d(-50.02, 4.683), Vector2d(-50.465, -2.211), Vector2d(-50.465, 3.126), Vector2d(-50.465, -17.994));
-    Curve kickAllianceRing(Vector2d(-66.808, -12), Vector2d(-66.808, -10), Vector2d(-66.808, -9), Vector2d(-66.808, -8.467));
-    Curve scoreAllianceRings(Vector2d(-61.141, 11.599), Vector2d(-61.44, 8.015), Vector2d(-65.524, -4), Vector2d(-61.067, -4));
-
-    task mmm(tmogo);
-    follow(mogoClamp, 4000, 0.5, 12, 1);
-    spinning = true;
+    armkP = 80;
+    targetLadybrownDeg = loadingPos;
+    lock = false;
+    ladyBrownStat = 1;
+    vexDelay(600);
     conveyor.spin(fwd, 12000, voltageUnits::mV);
+    setDrive(11000, 11000);
+    vexDelay(100);
+    setDrive(0, 0);
+    vexDelay(700);
+    conveyor.spin(fwd, 0, voltageUnits::mV);
+
+    lock = true;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    armkP = 50;
+    armkD = 0;
+    targetLadybrownDeg = 580;
+    vexDelay(400);
+    targetLadybrownDeg = 0;
+    lock = false;
+    ladyBrownStat = 0;
+    y = 60 - disFront.objectDistance(distanceUnits::in) * cos(0 - toRadian(imu.rotation()));
+
     vexDelay(200);
-    follow(firstStack, 4000, 0.7);
-    follow(middleFirstStack, 4000, 0.6, 5);
+
+    // back out from the wall stake and go for the first corner
+    driveStraightGyro(-15);
+    Curve c2(Vector2d(-19.526, 42.523), Vector2d(-28, 42.523), Vector2d(-34, 42.523), Vector2d(-56, 42.523));
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    newFollow(c2, 4500, 0.55, 17);
+    vexDelay(100);
+    setDrive(0, -12000);
     vexDelay(200);
-    follow(backUpFromFirstStack, 3000, 0.6, 14, 1);
-    follow(middleSecondStack, 3000, 0.6, 12);
-    vexDelay(500);
-    follow(backUpFromMiddle, 5000, 0.7, 25, 1);
-    task mmmm(ttmogo);
-    blueSorting = false;
-    spinning = false;
-    redStoring = true;
-    follow(intakeAllianceStack, 5000, 0.5, 12);
+    setDrive(0, 0);
+    driveToPoint(-47, 37);
+    driveToPoint(-46, 52);
     vexDelay(300);
-    follow(kickAllianceRing, 4000, 0.7, 20, 1);
-    driveStraight(3);
-    turnToHeading(90);
+    turnToHeading(-250);
+    // place the mobile goal in the first corner
+    mogo.set(false);
+    conveyor.spinFor(-1000, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    driveStraightGyro(-12);
+
+    // go towards the blue alliance stake and push a blue ring mobile goal into a corner
+    Curve c3(Vector2d(-59.084, 60.186), Vector2d(-51.151, 59.084), Vector2d(5.708, 34.776), Vector2d(22.898, 18.044));
+    spinning = false; 
+    redStoring = true;
+    task tttttt(skillsFirstIntake);
+    newFollow(c3, 7000, 0.7, 20);
+    driveToPoint(56, 8, 7000);
+    turnToHeading(-535 + 360);
     redStoring = false;
-    setDrive(-7000, -7000);
-    vexDelay(850);
+    driveStraight(-40, 0.7, 0.7, 1600);
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    ladyBrownStat = 1;
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+
+
+    // score the alliance stake
+    driveToPoint(51, 20, 5000);
+    turnToHeading(-360);
+    autoClampActive = true;
+    driveToPoint(50, -12, 5000);
+    driveToPoint(50, -10);
+    turnToPoint(70, -6);
+    driveToPoint(67, -8.5, 7000, 0, 1300);
+    setDrive(11000, 11000);
+    vexDelay(50);
     setDrive(0, 0);
-    conveyor.spin(fwd, -4000, voltageUnits::mV);
-    driveStraight(1.4);
-    lB.setBrake(coast);
-    lM.setBrake(coast);
-    lF.setBrake(coast);
-
-    rB.setBrake(coast);
-    rM.setBrake(coast);
-    rF.setBrake(coast);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(800);
-    driveStraight(6);
-    turnToHeading(-180);
-    // setDrive(12000, 12000);
-    // vexDelay(400);
-    // setDrive(0, 0);
-    // blueSorting = true;
-    // vexDelay(100000);
-}
-
-void blueReginalAWP() {
-    redSorting = true;
-    lB.setBrake(hold);
-    lM.setBrake(hold);
-    lF.setBrake(hold);
-
-    rB.setBrake(hold);
-    rM.setBrake(hold);
-    rF.setBrake(hold);
-    imu.setRotation(90, rotationUnits::deg);
-    x = 52.396;
-    y = 22.866;
-    Curve mogoClamp(Vector2d(43.795, 21.866), Vector2d(32.776, 21.866), Vector2d(39.14, 21.866), Vector2d(32.291, 21.866));
-    Curve firstStack(Vector2d(25.493, 32.528), Vector2d(25.493, 42.005), Vector2d(28.993, 33.751), Vector2d(28.993, 37.926));
-    Curve middleFirstStack(Vector2d(14, 50.202), Vector2d(5.953, 49.579), Vector2d(16.696, 50), Vector2d(15.011, 50));
-    Curve backUpFromFirstStack(Vector2d(13.014, 39.87), Vector2d(14.819, 39.87), Vector2d(15.911, 41.87), Vector2d(25.276, 41.87));
-    Curve middleSecondStack(Vector2d(18.025, 41.267), Vector2d(19.038, 42.484), Vector2d(18.103, 38.7), Vector2d(13.706, 38.7));
-    Curve backUpFromMiddle(Vector2d(11.661, 34.038), Vector2d(19.222, 23.586), Vector2d(31, 20.358), Vector2d(49.02, 20.358));
-    Curve intakeAllianceStack(Vector2d(50.02, 4.683), Vector2d(50.465, 2.211), Vector2d(50.465, 3.126), Vector2d(50.465, -17.994));
-    Curve kickAllianceRing(Vector2d(65.808, -12), Vector2d(65.808, -10), Vector2d(65.808, -10), Vector2d(65.808, -6.467));
-    Curve scoreAllianceRings(Vector2d(61.141, 11.599), Vector2d(61.44, 8.015), Vector2d(65.524, -4), Vector2d(61.067, -4));
-
-    task mmm(tmogo);
-    follow(mogoClamp, 4000, 0.5, 12, 1);
-    spinning = true;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(200);
-    follow(firstStack, 4000, 0.7);
-    follow(middleFirstStack, 4000, 0.6, 8);
-    vexDelay(200);
-    follow(backUpFromFirstStack, 3000, 0.6, 14, 1);
-    follow(middleSecondStack, 3000, 0.6, 12);
+    double rX = x;
+    double rY = y;
+    driveStraightGyro(-6.3);
+    targetLadybrownDeg = 600;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
     vexDelay(500);
-    follow(backUpFromMiddle, 5000, 0.7, 25, 1);
-    task mmmm(ttmogo);
-    redSorting = false;
+    ladyBrownStat = 0;
+    driveStraightGyro(-4);
+    targetLadybrownDeg = 0;
+    x = 60 - disFront.objectDistance(distanceUnits::in) * cos(toRadian(90 - imu.rotation()));
+
+    // go through the middle ladder towards the third corner
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    driveToPoint(35, 24, 7000);
+    conveyor.spin(fwd, 0, voltageUnits::mV);
     spinning = false;
-    blueStoring = true;
-    follow(intakeAllianceStack, 5000, 0.5, 12);
+    task ttt(skillsFirstIntake);
+
+    driveToPoint(-3, -7, 8000);
+
+    // score all rings in the corner and place the mobile goal into the corner
+    Curve c4(Vector2d(-20.752, -22.275), Vector2d(-24.252, -33.284), Vector2d(-32.762, -49.545), Vector2d(-59.278, -51.545));
+    task tttt(skillsSecondIntake);
+    newFollow(c4, 6000, 0.65, 17);
+    x = -66 + disFront.objectDistance(distanceUnits::in) * cos(toRadian(-90 - imu.rotation()));
     vexDelay(300);
-    follow(kickAllianceRing, 4000, 0.7, 20, 1);
-    driveStraight(1.7);
-    turnToHeading(-90);
-    blueStoring = false;
-    setDrive(-7000, -7000);
-    vexDelay(850);
+    setDrive(-12000, 0);
+    vexDelay(200);
     setDrive(0, 0);
-    conveyor.spin(fwd, -4000, voltageUnits::mV);
-    driveStraight(1.6);
-    lB.setBrake(coast);
-    lM.setBrake(coast);
-    lF.setBrake(coast);
+    driveToPoint(-47, -48);
+    driveToPoint(-48, -62, 12000, 0, 1500);
 
-    rB.setBrake(coast);
-    rM.setBrake(coast);
-    rF.setBrake(coast);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(800);
-    driveStraight(6);
-    turnToHeading(180);
-    // setDrive(11000, 11000);
-    // vexDelay(400);
-    // setDrive(0, 0);
-    // redSorting = true;
-    // vexDelay(100000);
-}
 
-int snowDaySkillsClamp1() {
-    vexDelay(600);
-    mogo.set(true);
-    return 0;
-}
-
-int snowDaySkillsWall1() {
-    vexDelay(600);
-    armkP = 500;
-    armkD = 700;
-    targetLadybrownDeg = 22.3;
-    return 0;
-}
-
-void snowDaySkills() {
-    lF.setBrake(hold);
-    lM.setBrake(hold);
-    lB.setBrake(hold);
-
-    rF.setBrake(hold);
-    rM.setBrake(hold);
-    rB.setBrake(hold);
-    blueSorting = false;
-    redSorting = false;
-    imu.setRotation(90, rotationUnits::deg);
-    x = -62;
-    y = 0;
-    driveStraight(0.999);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    vexDelay(800);
-    conveyor.spin(fwd, 0, voltageUnits::mV);
-    driveStraightGyro(15.9);
-    turnToHeading(180, 1, 1, 0, 360, 36, 2300);
-    task t(snowDaySkillsClamp1);
-    driveStraightGyro(-22, 0.5);
-    vexDelay(100);
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    spinning = true;
-    Curve c1(Vector2d(-30.84, 17.891), Vector2d(0.309, 62.448), Vector2d(17.915, 40.076), Vector2d(25.869, 45.871));
-    follow(c1, 5000, 0.8, 24, 0, 800);
     vexDelay(200);
-    setDrive(-8000, 8000);
-    vexDelay(450);
-    task tt(snowDaySkillsWall1);
-    Curve c2(Vector2d(11.328, 40.903), Vector2d(3.6, 40.242), Vector2d(2.5, 37.132), Vector2d(2.7, 60));
-    spinning = false;
-    follow(c2, 4000, 0.5, 7);
-    vexDelay(600);
-    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
-    armkP = 500;
-    armkD = 500;
-    targetLadybrownDeg = 132;
-    vexDelay(600);
-    driveStraightGyro(-15);
-    targetLadybrownDeg = 0;
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    Curve c3(Vector2d(-12.441, 44.142), Vector2d(-29.661, 44.142), Vector2d(-36.03, 44.142), Vector2d(-55.081, 46.142));
-    spinning = true;
-    follow(c3, 5000, 0.6, 24, 0, 1000);
-    vexDelay(200);
-    driveStraightGyro(-15);
-    turnToHeading(-5, 1, 1, 0, 360, 36, 2100);
-    driveStraightGyro(13);
-    vexDelay(200);
-    turnToHeading(110);
-    spinning = false;
-    conveyor.spin(fwd, 0, voltageUnits::mV);
-    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    y = -66 + disFront.objectDistance(distanceUnits::in) * cos(toRadian(180 - imu.rotation()));
+    turnToHeading(-290);
     mogo.set(false);
-    driveStraightGyro(-13);
-    driveStraightGyro(13);
-    Curve c4(Vector2d(-43.714, 55.779), Vector2d(-43.714, 39.691), Vector2d(-43.714, 2.226), Vector2d(-43.714, 0.507));
-    follow(c4, 6000, 0.7, 24, 1);
-    driveToPoint(-43.714, -17, 4500);
-    mogo.set(true);
-    vexDelay(100);
-    Curve c5(Vector2d(-30.84, -15.891), Vector2d(0.309, -60.448), Vector2d(17.915, -38.076), Vector2d(25.869, -43.871));
-    conveyor.spin(fwd, 12000, voltageUnits::mV);
-    spinning = true;
-    follow(c5, 5000, 0.8, 24, 0, 800);
-    vexDelay(200);
-    setDrive(8000, -8000);
-    vexDelay(450);
-    task ttttt(snowDaySkillsWall1);
-    Curve c6(Vector2d(11.328, -40.903), Vector2d(8, -40.242), Vector2d(4.5, -42.632), Vector2d(4.5, -60.6));
+    conveyor.spinFor(-600, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    driveStraightGyro(-10.1);
+    // intake two rings and go for the second wall stake
+    driveToPoint(-50, -46, 8000);
+    turnToPoint(-47, -50);
+    autoClampActive = true;
+    driveToPoint(-50, -25, 7000);
     spinning = false;
-    follow(c6, 4000, 0.5, 7);
-    vexDelay(600);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    ladyBrownStat = 1;
+    driveToPoint(-22.75, -54, 8000);
+    driveToPoint(-7.5, -46, 8000);
+    turnToPoint(-5, -70);
+    vexDelay(50);
+    driveToPoint(-5, -70, 8000, 0, 1400);
+    setDrive(11000, 11000);
+    vexDelay(200);
+    setDrive(0, 0);
+    vexDelay(200);
+    lock = true;
     conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
-    armkP = 500;
-    armkD = 500;
-    targetLadybrownDeg = 132;
+    armkP = 50;
+    armkD = 0;
+    targetLadybrownDeg = 580;
+    vexDelay(400);
+    armkP = 80;
+    targetLadybrownDeg = loadingPos;
+    lock = false;
+    ladyBrownStat = 1;
     vexDelay(600);
-    driveStraightGyro(-15);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    setDrive(11000, 11000);
+    vexDelay(100);
+    setDrive(0, 0);
+    vexDelay(700);
+    conveyor.spin(fwd, 0, voltageUnits::mV);
+
+    lock = true;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    armkP = 50;
+    armkD = 0;
+    targetLadybrownDeg = 580;
+    vexDelay(400);
     targetLadybrownDeg = 0;
-    Curve c7(Vector2d(-12.441, -44.142), Vector2d(-29.661, -44.142), Vector2d(-36.03, -44.142), Vector2d(-55.081, -46.142));
-    // conveyor.spin(fwd, 12000, voltageUnits::mV);
-    // spinning = true;
-    // follow(c7, 5000, 0.6, 24, 0, 1000);
+    lock = false;
+    ladyBrownStat = 0;
+    vexDelay(200);
+    y = -60 + disFront.objectDistance(distanceUnits::in) * cos(toRadian(180 - imu.rotation()));
+
+    // last corner
+    driveStraightGyro(-15);
+    spinning = true;
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    turnToPoint(24, -24);
+    driveToPoint(29, -14, 8000);
+    vexDelay(200);
+    turnToPoint(19.449, -47.131);
+    driveToPoint(19.449, -47.131);
+    vexDelay(200);
+    turnToPoint(50, -47);
+    driveToPoint(40, -47);
+    driveToPoint(47, -47, 6000);
+    vexDelay(200);
+    turnToHeading(-39);
+    mogo.set(false);
+    spinning = false;
+    conveyor.spin(fwd, -12000, voltageUnits::mV);
+    driveStraight(-13, 0.7, 0.7, 1000);
+    driveStraight(14);
+    cout << rX << " " << rY << endl;
     vexDelay(10000000);
 }
+
+void provRedRingRush() {
+    lB.setBrake(brake);
+    lM.setBrake(brake);
+    lF.setBrake(brake);
+    rB.setBrake(brake);
+    rM.setBrake(brake);
+    rF.setBrake(brake);
+    imu.setRotation(-90, rotationUnits::deg);
+    x = -48;
+    y = -24;
+    autoClampActive = true;
+    driveStraightGyro(-23, 0.7, 0.7);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    vexDelay(200); 
+    turnToPoint(-6, -6.5);
+    vexDelay(200);
+    conveyor.spinTo(2130, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    driveToPoint(-6, -6, 4900);
+    // conveyor.spin(fwd, -12000, voltageUnits::mV);
+    vexDelay(100);
+    turnToHeading(67.5);
+    driveStraight(1.5, 0.7, 0.7);
+    driveStraightGyro(-35, 0.75, 0.75, 3000);
+    turnToHeading(110);
+
+    vexDelay(200);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    driveToPoint(-35, -10);
+    turnToPoint(-24, -50);
+    driveToPoint(-24, -17);
+    vexDelay(100000000);
+
+}
+
+void provRedNeg() {
+    imu.setRotation(-90 - 27.9097, rotationUnits::deg);
+    x = -52;
+    y = 8;
+    blueSorting = true;
+    manual = false;
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    ladyBrownStat = 1;
+    task t(skillsFirstAlliance);
+    // score the first alliance stake
+    driveStraightGyro(7.5);
+    vexDelay(600);
+    targetLadybrownDeg = 600;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    vexDelay(600);
+    ladyBrownStat = 0;
+    autoClampActive = true;
+    driveStraightGyro(-38, 0.75, 0.75);
+    targetLadybrownDeg = 0;
+    vexDelay(100);
+    turnToHeading(55);
+    vexDelay(50);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    driveToPoint(-11.4, 39, 7000);
+    swingToHeading(-2, false);
+    driveStraightGyro(5);
+    vexDelay(100);
+    turnToPoint(-23.602, 47.084);
+    driveStraightGyro(32, 0.7, 0.7);
+    vexDelay(300);
+    // turnToPoint(-62, 66);
+    // spinning = false;
+    // conveyor.spin(fwd, 0, voltageUnits::mV);
+    // targetLadybrownDeg = 600;
+    // driveToPoint(-62, 66, 7000, 0, 1800);
+    // conveyor.spin(fwd, 12000, voltageUnits::mV);
+    // vexDelay(200);
+    // spinning = true;
+    // driveStraightGyro(-21);
+    // vexDelay(100);
+    // driveStraightGyro(16);
+    // vexDelay(100);
+    // driveStraightGyro(-20);
+    turnToPoint(0, 0);
+    lB.setBrake(coast);
+    lM.setBrake(coast);
+    lF.setBrake(coast);
+    rB.setBrake(coast);
+    rM.setBrake(coast);
+    rF.setBrake(coast);
+    targetLadybrownDeg = 300;
+    setDrive(12000, 12000);
+    vexDelay(600);
+    setDrive(0, 0);
+}
+
+void provBlueNeg() {
+    imu.setRotation(-(-90 - 27.9097), rotationUnits::deg);
+    x = 52;
+    y = 8;
+    redSorting = true;
+    manual = false;
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    ladyBrownStat = 1;
+    task t(skillsFirstAlliance);
+    // score the first alliance stake
+    driveStraightGyro(7.5);
+    vexDelay(600);
+    targetLadybrownDeg = 600;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    vexDelay(600);
+    ladyBrownStat = 0;
+    autoClampActive = true;
+    driveStraightGyro(-38, 0.75, 0.75);
+    targetLadybrownDeg = 0;
+    vexDelay(100);
+    turnToHeading(-55);
+    vexDelay(50);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    driveToPoint(12, 39, 7000);
+    swingToHeading(2, false);
+    driveStraightGyro(13.5);
+    vexDelay(100);
+    turnToPoint(23.602, 47.084);
+    driveStraightGyro(32, 0.7, 0.7); 
+    turnToPoint(62, 66);
+    spinning = false;
+    conveyor.spin(fwd, 0, voltageUnits::mV);
+    targetLadybrownDeg = 600;
+    driveToPoint(62, 66, 7000, 0, 1800);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    vexDelay(200);
+    spinning = true;
+    driveStraightGyro(-21);
+    vexDelay(100);
+    driveStraightGyro(16);
+    vexDelay(100);
+    driveStraightGyro(-20);
+    turnToPoint(0, 0);
+    lB.setBrake(coast);
+    lM.setBrake(coast);
+    lF.setBrake(coast);
+    rB.setBrake(coast);
+    rM.setBrake(coast);
+    rF.setBrake(coast);
+    targetLadybrownDeg = 260;
+    setDrive(12000, 12000);
+    vexDelay(600);
+    setDrive(0, 0);
+}
+
+void provBluePosElim() {
+    lB.setBrake(brake);
+    lM.setBrake(brake);
+    lF.setBrake(brake);
+    rB.setBrake(brake);
+    rM.setBrake(brake);
+    rF.setBrake(brake);
+    redSorting = true;
+    imu.setRotation(imu.rotation(), rotationUnits::deg);
+    x = 52;
+    y = 8;
+    manual = false;
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    task tt(skillsFirstAlliance);
+    driveStraightGyro(5.5);
+    vexDelay(300);
+    targetLadybrownDeg = 600;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    vexDelay(400);
+    ladyBrownStat = 0;
+    autoClampActive = true;
+    driveStraightGyro(-37.5, 0.75, 0.75);
+    targetLadybrownDeg = 0;
+    vexDelay(150);
+    driveStraightGyro(17);
+    turnToPoint(-6, 17);
+    vexDelay(100);
+    driveToPoint(14, 10);
+    leftDoinker.set(true);
+    vexDelay(400);
+    turnToHeading(-70);
+    driveStraight(2.5, 1, 1, 3000, 3000, 70, 40000);
+    rightDoinker.set(true);
+    vexDelay(400);
+    driveStraightGyro(-27, 0.7, 0.7);
+    turnToHeading(-105);
+    leftDoinker.set(false);
+    rightDoinker.set(false);
+    vexDelay(400);
+    turnToHeading(-78);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    driveStraightGyro(13);
+    vexDelay(200);
+    turnToHeading(-183);
+    driveStraightGyro(39, 0.65, 0.65);
+    swingToHeading(-266, false);
+    rightDoinker.set(true);
+    driveStraightGyro(21, 0.85, 0.85);
+    turnToHeading(-360);
+    mogo.set(false);
+    rightDoinker.set(false);
+    vexDelay(100000000);
+}
+
+void provRedPosElim() {
+    lB.setBrake(brake);
+    lM.setBrake(brake);
+    lF.setBrake(brake);
+    rB.setBrake(brake);
+    rM.setBrake(brake);
+    rF.setBrake(brake);
+    blueSorting = true;
+    imu.setRotation(imu.rotation(), rotationUnits::deg);
+    x = -52;
+    y = 8;
+    manual = false;
+    armkP = 80;
+    armkD = 0;
+    targetLadybrownDeg = loadingPos;
+    task tt(skillsFirstAlliance);
+    driveStraightGyro(5.5);
+    vexDelay(300);
+    targetLadybrownDeg = 600;
+    conveyor.spinFor(-200, rotationUnits::deg, 600, velocityUnits::rpm, false);
+    vexDelay(400);
+    ladyBrownStat = 0;
+    autoClampActive = true;
+    driveStraightGyro(-37.5, 0.75, 0.75);
+    targetLadybrownDeg = 0;
+    vexDelay(150);
+    driveStraightGyro(19);
+    turnToPoint(6, 17);
+    vexDelay(100);
+    driveToPoint(-13, 11);
+    rightDoinker.set(true);
+    vexDelay(400);
+    turnToHeading(70);
+    driveStraight(2.5, 1, 1, 3000, 3000, 70, 40000);
+    leftDoinker.set(true);
+    vexDelay(400);
+    driveStraightGyro(-27, 0.7, 0.7);
+    turnToHeading(115);
+    leftDoinker.set(false);
+    rightDoinker.set(false);
+    vexDelay(400);
+    turnToHeading(78);
+    conveyor.spin(fwd, 12000, voltageUnits::mV);
+    spinning = true;
+    driveStraightGyro(13);
+    vexDelay(200);
+    turnToHeading(183);
+    driveStraightGyro(39, 0.65, 0.65);
+    swingToHeading(266);
+    leftDoinker.set(true);
+    driveStraightGyro(21, 0.85, 0.85);
+    turnToHeading(360);
+    mogo.set(false);
+    leftDoinker.set(false);
+    vexDelay(100000000);
+}
+
 #endif // !AUTONS_H

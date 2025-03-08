@@ -114,6 +114,7 @@
 		"valarray": "cpp",
 		"dense": "cpp",
 		"eigenvalues": "cpp",
-		"cholesky": "cpp"
+		"cholesky": "cpp",
+		"iterator": "cpp"
 	}
 }

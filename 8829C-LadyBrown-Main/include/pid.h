@@ -64,7 +64,7 @@ double angularPID(double error, double kP, double kI, double kD) {
     if ((error / fabs(error)) != (angularPrevError / fabs(angularPrevError))) {
         angularIntegral = 0;
     }
-    const double derivative = -imu.gyroRate(zaxis,dps) / 100;
+    const double derivative = imu.gyroRate(zaxis,dps) / 100;
     angularPrevError = error;
     return (error * kP) + (angularIntegral * kI) + (derivative * kD);
 }
