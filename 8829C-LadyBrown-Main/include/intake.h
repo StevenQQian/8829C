@@ -70,10 +70,8 @@ int setLadybrown() {
                     armkP = 50;
                     armkD = 0;
                     targetLadybrownDeg = 580;
-                    vexDelay(700);
-                    lock = false;
-                    targetLadybrownDeg = 0;
-                    ladyBrownStat = 0;
+                    ladyBrownStat = 2;
+                    vexDelay(100);
                 }
             }
             if (master.ButtonL2.PRESSED) {
@@ -82,6 +80,13 @@ int setLadybrown() {
                 targetLadybrownDeg = 0;
                 ladyBrownStat = 0;
             }
+        }
+        else if (ladyBrownStat == 2) {
+            if (!master.ButtonL1.pressing()) {
+                targetLadybrownDeg = 0;
+                ladyBrownStat = 0;
+            }
+            
         }
 
         if (master.ButtonX.PRESSED) {
